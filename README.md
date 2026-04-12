@@ -59,7 +59,8 @@ flutter run
 
 ## 📸 Screenshots
 
-(Add your app screenshots here)
+<img width="1548" height="850" alt="image" src="https://github.com/user-attachments/assets/82e000e9-804c-47c4-b87a-21d08fd2ccee" />
+
 
 - Login Screen  
 - Dashboard  
