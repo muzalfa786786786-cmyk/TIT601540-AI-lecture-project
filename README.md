@@ -59,7 +59,8 @@ flutter run
 
 ## 📸 Screenshots
 
-<img width="1548" height="850" alt="image" src="https://github.com/user-attachments/assets/82e000e9-804c-47c4-b87a-21d08fd2ccee" />
+<img width="253" height="486" alt="image" src="https://github.com/user-attachments/assets/85a2e7ed-bf94-4807-ba79-e7c33cbfdc69" />
+
 
 
 - Login Screen  
