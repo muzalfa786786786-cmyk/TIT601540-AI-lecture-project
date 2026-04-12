@@ -44,7 +44,7 @@ my_project/
 ## ▶️ Getting Started
 
 1. Clone the repository  
-git clone https://github.com/your-username/my_project.git  
+[git clone https://github.com/your-username/my_project.git ](https://github.com/muzalfa786786786-cmyk/TIT601540-AI-lecture-project.git) 
 
 2. Navigate to project folder  
 cd my_project  
