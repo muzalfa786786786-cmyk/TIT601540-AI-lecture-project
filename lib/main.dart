@@ -6,6 +6,7 @@ import 'screens/slides_screen.dart';
 import 'screens/presentation_screen.dart';
 import 'screens/chat_screen.dart';
 import 'screens/profile_screen.dart';
+import 'screens/profile_posts_screen.dart';  // <-- New screen import
 
 void main() {
   runApp(const MyApp());
@@ -19,26 +20,75 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'AI Lecturer',
-
-      // 🎨 App Theme
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primaryColor: Colors.red.shade700,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red, primary: Colors.red.shade700),
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.red.shade700,
+          foregroundColor: Colors.white,
+          elevation: 6,
+          shadowColor: Colors.red.shade900,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red.shade700,
+            foregroundColor: Colors.white,
+            elevation: 5,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        ),
+        useMaterial3: true,
       ),
-
-      // 🚀 Starting Screen
       initialRoute: '/',
-
-      // 📌 All Screens Routes
-      routes: {
-        '/': (context) => const LoginScreen(),
-        '/dashboard': (context) => DashboardScreen(),
-        '/create': (context) => CreateLecture(),
-        '/slides': (context) => SlidesScreen(),
-        '/presentation': (context) => PresentationScreen(),
-        '/chat': (context) => ChatScreen(),
-        '/profile': (context) => ProfileScreen(),
+      onGenerateRoute: (settings) {
+        Widget page;
+        switch (settings.name) {
+          case '/':
+            page = const LoginScreen();
+            break;
+          case '/dashboard':
+            page = const DashboardScreen();
+            break;
+          case '/create':
+            page = const CreateLecture();
+            break;
+          case '/slides':
+            page = const SlidesScreen();
+            break;
+          case '/presentation':
+            page = const PresentationScreen();
+            break;
+          case '/chat':
+            page = const ChatScreen();
+            break;
+          case '/profile':
+            page = const ProfileScreen();
+            break;
+          case '/profile_posts':          // <-- New route
+            page = const ProfilePostsScreen();
+            break;
+          default:
+            page = const LoginScreen();
+        }
+        return PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => page,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(1.0, 0.0);
+            const end = Offset.zero;
+            const curve = Curves.easeOutCubic;
+            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            var fadeTween = Tween(begin: 0.0, end: 1.0).chain(CurveTween(curve: curve));
+            return FadeTransition(
+              opacity: animation.drive(fadeTween),
+              child: SlideTransition(
+                position: animation.drive(tween),
+                child: child,
+              ),
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 500),
+        );
       },
     );
   }
 }
-

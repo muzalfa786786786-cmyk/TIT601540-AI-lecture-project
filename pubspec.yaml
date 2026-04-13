@@ -18,5 +18,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  assets:
-    - lib/screens/
+  flutter:
+    assets:
+      - lib/assets/ai.png
+      - lib/assets/profile.png
+      - lib/screens/image.png    # <-- Yeh line add karo

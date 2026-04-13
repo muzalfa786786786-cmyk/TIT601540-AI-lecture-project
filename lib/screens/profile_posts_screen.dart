@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class Home extends StatelessWidget {
-  const Home({super.key});
+class ProfilePostsScreen extends StatelessWidget {
+  const ProfilePostsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -9,52 +9,42 @@ class Home extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Profile & Posts"),
         centerTitle: true,
+        backgroundColor: Colors.red.shade700,
       ),
-
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-
-            /// Profile Section
-            const CircleAvatar(
+            /// Profile Section – Local Image (Asset)
+            CircleAvatar(
               radius: 40,
-              backgroundImage: NetworkImage(
-                "lib/screens/image.png"),
+              backgroundImage: const AssetImage("lib/screens/image.png"),
+              onBackgroundImageError: (_, __) {},
+              child: const Icon(Icons.person, size: 40, color: Colors.red),
             ),
-
             const SizedBox(height: 10),
-
             const Text(
               "Muzalfa Bibi",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-
             const Text(
               "Flutter Developer | Web Engineering Student",
               style: TextStyle(color: Colors.green),
             ),
-
             const SizedBox(height: 20),
 
             /// Posts
             Expanded(
               child: ListView(
                 children: const [
-
                   PostCard(
                     title: "Post 1",
                     text: "Learning Flutter is fun and powerful 🚀",
                   ),
-
                   PostCard(
                     title: "Post 2",
                     text: "Today I created my Profile & Posts App in Flutter.",
                   ),
-
                   PostCard(
                     title: "Post 3",
                     text: "Structured widgets make code clean and readable.",
@@ -65,10 +55,13 @@ class Home extends StatelessWidget {
           ],
         ),
       ),
-
-      /// Floating Button
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Add new post feature coming soon!")),
+          );
+        },
+        backgroundColor: Colors.red.shade700,
         child: const Icon(Icons.add),
       ),
     );
@@ -95,11 +88,13 @@ class PostCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
       ),
       child: ListTile(
+        leading: const Icon(Icons.article, color: Colors.red),
         title: Text(
           title,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Text(text),
+        trailing: const Icon(Icons.chevron_right, color: Colors.red),
       ),
     );
   }
