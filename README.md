@@ -65,12 +65,18 @@ flutter run
 <img width="585" height="802" alt="Screenshot 2026-04-12 223122" src="https://github.com/user-attachments/assets/74064390-88bd-4284-80f5-276f0013f3a2" />
 <img width="578" height="796" alt="Screenshot 2026-04-12 223217" src="https://github.com/user-attachments/assets/3b2dc5a9-ab85-415a-8060-70f24c091322" />
 <img width="605" height="798" alt="Screenshot 2026-04-12 223250" src="https://github.com/user-attachments/assets/9a20a8c4-4dc4-4751-9486-8a466d3ffff7" />
-
+<img width="831" height="1214" alt="image" src="https://github.com/user-attachments/assets/54420342-6511-4cf2-ae05-e4698608f9a6" />
+<img width="863" height="1214" alt="image" src="https://github.com/user-attachments/assets/ff44b89b-a067-42ca-8537-7b19f426f214" />
+<img width="761" height="1206" alt="image" src="https://github.com/user-attachments/assets/fb55c7cc-952f-4644-9793-f7bae7517470" />
+<img width="436" height="769" alt="Screenshot 2026-04-17 135431" src="https://github.com/user-attachments/assets/ad170a40-f932-49f4-b4df-c6fcdc66c8fa" />
+<img width="459" height="765" alt="Screenshot 2026-04-17 135501" src="https://github.com/user-attachments/assets/02bf26c7-2f5e-44a2-82da-aa53fd6cb214" />
 
 
 
 - Login Screen  
-- Dashboard  
+- Dashboard
+- Home
+- About
 - Create Lecture  
 - Generated Slides  
 - AI Presentation  
