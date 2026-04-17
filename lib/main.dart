@@ -7,7 +7,8 @@ import 'screens/presentation_screen.dart';
 import 'screens/chat_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/profile_posts_screen.dart';  // <-- New screen import
-
+import 'screens/about_screen.dart';
+import 'screens/gratitude_screen.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -48,6 +49,13 @@ class MyApp extends StatelessWidget {
             break;
           case '/dashboard':
             page = const DashboardScreen();
+            break;
+        // Inside onGenerateRoute switch statement
+          case '/about':
+            page = const AboutScreen();
+            break;
+          case '/gratitude':
+            page = const GratitudeScreen();
             break;
           case '/create':
             page = const CreateLecture();

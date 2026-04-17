@@ -81,7 +81,7 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                       ),
                       child: ClipOval(
                         child: Image.asset(
-                          'lib/assets/image.png', // Make sure this image exists
+                          'lib/assets/profile.png', // Make sure this image exists
                           width: 120,
                           height: 120,
                           fit: BoxFit.cover,

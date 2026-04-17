@@ -18,7 +18,7 @@ class ProfilePostsScreen extends StatelessWidget {
             /// Profile Section – Local Image (Asset)
             CircleAvatar(
               radius: 40,
-              backgroundImage: const AssetImage("lib/screens/image.png"),
+              backgroundImage: const AssetImage("lib/assets/profile.png"),
               onBackgroundImageError: (_, __) {},
               child: const Icon(Icons.person, size: 40, color: Colors.red),
             ),

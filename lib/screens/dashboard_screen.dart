@@ -1,21 +1,28 @@
 import 'package:flutter/material.dart';
 import '../widgets/custom_card.dart';
-
+import '../widgets/custom_button.dart';
+import 'bottom_nav_demo.dart';
+import 'bottom_appbar_demo.dart';
+import 'tab_drawer_demo.dart';
+import 'card_list_grid_sliver_demo.dart';
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
-
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
-
 class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProviderStateMixin {
   late AnimationController _fabController;
   bool _isFabExpanded = false;
-
   final List<Map<String, dynamic>> _menuItems = [
     {'icon': Icons.add_circle_outline, 'title': 'Create Lecture', 'route': '/create'},
     {'icon': Icons.slideshow, 'title': 'My Slides', 'route': '/slides'},
     {'icon': Icons.chat_bubble_outline, 'title': 'AI Chat', 'route': '/chat'},
+    {'icon': Icons.info, 'title': 'About (Hero Animation)', 'route': '/about'},
+    {'icon': Icons.tab, 'title': 'Bottom Navigation Bar', 'screen': const BottomNavDemo()},
+    {'icon': Icons.apps, 'title': 'BottomAppBar with FAB', 'screen': const BottomAppBarDemo()},
+    {'icon': Icons.person_outline, 'title': 'Profile & Posts', 'route': '/profile_posts'},
+    {'icon': Icons.tab, 'title': 'TabBar & Drawer Demo', 'screen': const TabDrawerDemo()},
+    {'icon': Icons.grid_view, 'title': 'Cards, Lists, Grids & Slivers', 'screen': const CardListGridSliverDemo()},
   ];
 
   @override
@@ -53,13 +60,16 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       ),
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [Colors.red.shade50, Colors.white], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+          gradient: LinearGradient(
+            colors: [Colors.red.shade50, Colors.white],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
         ),
         child: ListView.builder(
           padding: const EdgeInsets.all(16),
           itemCount: _menuItems.length,
           itemBuilder: (context, index) {
-            // Staggered animation delay
             return SlideTransition(
               position: Tween<Offset>(begin: const Offset(0.5, 0), end: Offset.zero).animate(
                 CurvedAnimation(
@@ -72,7 +82,13 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 16),
                   child: CustomCard(
-                    onTap: () => Navigator.pushNamed(context, _menuItems[index]['route']),
+                    onTap: () {
+                      if (_menuItems[index].containsKey('screen')) {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => _menuItems[index]['screen']));
+                      } else {
+                        Navigator.pushNamed(context, _menuItems[index]['route']);
+                      }
+                    },
                     child: ListTile(
                       leading: Icon(_menuItems[index]['icon'], color: Colors.red.shade700, size: 32),
                       title: Text(_menuItems[index]['title'], style: const TextStyle(fontWeight: FontWeight.bold)),
