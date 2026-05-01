@@ -1,0 +1,70 @@
+{
+  "courses": [
+    {
+      "id": "1",
+      "title": "Flutter Development",
+      "description": "Learn Flutter framework for cross-platform app development",
+      "progress": 75,
+      "icon": "flutter",
+      "category": "Development",
+      "instructor": "Dr. Smith",
+      "totalLessons": 24,
+      "completedLessons": 18
+    },
+    {
+      "id": "2",
+      "title": "UI/UX Design",
+      "description": "Master user interface and experience design principles",
+      "progress": 45,
+      "icon": "design_services",
+      "category": "Design",
+      "instructor": "Prof. Johnson",
+      "totalLessons": 20,
+      "completedLessons": 9
+    },
+    {
+      "id": "3",
+      "title": "Python Programming",
+      "description": "Python from basics to advanced concepts",
+      "progress": 90,
+      "icon": "code",
+      "category": "Programming",
+      "instructor": "Dr. Williams",
+      "totalLessons": 32,
+      "completedLessons": 29
+    },
+    {
+      "id": "4",
+      "title": "Machine Learning",
+      "description": "Introduction to ML algorithms and applications",
+      "progress": 30,
+      "icon": "psychology",
+      "category": "Data Science",
+      "instructor": "Prof. Brown",
+      "totalLessons": 40,
+      "completedLessons": 12
+    },
+    {
+      "id": "5",
+      "title": "Cloud Computing",
+      "description": "AWS, Azure, and Google Cloud platforms",
+      "progress": 60,
+      "icon": "cloud",
+      "category": "Cloud",
+      "instructor": "Dr. Davis",
+      "totalLessons": 28,
+      "completedLessons": 17
+    },
+    {
+      "id": "6",
+      "title": "Database Management",
+      "description": "SQL, MongoDB, and database design",
+      "progress": 20,
+      "icon": "storage",
+      "category": "Data",
+      "instructor": "Prof. Wilson",
+      "totalLessons": 35,
+      "completedLessons": 7
+    }
+  ]
+}

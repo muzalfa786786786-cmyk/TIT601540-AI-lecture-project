@@ -1,102 +1,72 @@
+// lib/main.dart
 import 'package:flutter/material.dart';
-import 'screens/login_screen.dart';
-import 'screens/dashboard_screen.dart';
-import 'screens/create_lecture.dart';
-import 'screens/slides_screen.dart';
-import 'screens/presentation_screen.dart';
-import 'screens/chat_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+
+// Theme & Routes
+import 'theme/app_theme.dart';
+import 'routes/app_routes.dart';
+
+// Screens
+import 'screens/splash_screen.dart';
+import 'screens/auth_screen.dart';
+import 'screens/main_nav.dart';
+import 'screens/home_screen.dart';
+import 'screens/slide_generator_screen.dart';
+import 'screens/live_qa_screen.dart';
+import 'screens/student_upload_screen.dart';
+import 'screens/courses_screen.dart';
+import 'screens/saved_slides_screen.dart';
+import 'screens/whiteboard_screen.dart';
+import 'screens/avatar_screen.dart';
 import 'screens/profile_screen.dart';
-import 'screens/profile_posts_screen.dart';  // <-- New screen import
-import 'screens/about_screen.dart';
-import 'screens/gratitude_screen.dart';
-void main() {
-  runApp(const MyApp());
+
+// Providers
+import 'providers/auth_provider.dart';
+import 'providers/slides_provider.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    debugPrint('Firebase initialization error: $e');
+  }
+
+  runApp(const TeachLearnApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class TeachLearnApp extends StatelessWidget {
+  const TeachLearnApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'AI Lecturer',
-      theme: ThemeData(
-        primaryColor: Colors.red.shade700,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red, primary: Colors.red.shade700),
-        appBarTheme: AppBarTheme(
-          backgroundColor: Colors.red.shade700,
-          foregroundColor: Colors.white,
-          elevation: 6,
-          shadowColor: Colors.red.shade900,
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red.shade700,
-            foregroundColor: Colors.white,
-            elevation: 5,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-        ),
-        useMaterial3: true,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => SlidesProvider()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'TeachLearn - AI Lecturer',
+        theme: AppTheme.lightTheme,
+        initialRoute: AppRoutes.splash,
+        routes: {
+          AppRoutes.splash: (_) => const SplashScreen(),
+          AppRoutes.auth: (_) => const AuthScreen(),
+          AppRoutes.main: (_) => const MainNav(),
+          AppRoutes.home: (_) => HomeScreen(onNavigate: (i) {}),
+          AppRoutes.aiSlides: (_) => const SlideGeneratorScreen(),
+          AppRoutes.liveQA: (_) => const LiveQAScreen(),
+          AppRoutes.upload: (_) => const StudentUploadScreen(),
+          AppRoutes.courses: (_) => const CoursesScreen(),
+          AppRoutes.saved: (_) => const SavedSlidesScreen(),
+          AppRoutes.whiteboard: (_) => const WhiteboardScreen(),
+          AppRoutes.avatar: (_) => const AvatarScreen(),
+          AppRoutes.profile: (_) => const ProfileScreen(),
+        },
       ),
-      initialRoute: '/',
-      onGenerateRoute: (settings) {
-        Widget page;
-        switch (settings.name) {
-          case '/':
-            page = const LoginScreen();
-            break;
-          case '/dashboard':
-            page = const DashboardScreen();
-            break;
-        // Inside onGenerateRoute switch statement
-          case '/about':
-            page = const AboutScreen();
-            break;
-          case '/gratitude':
-            page = const GratitudeScreen();
-            break;
-          case '/create':
-            page = const CreateLecture();
-            break;
-          case '/slides':
-            page = const SlidesScreen();
-            break;
-          case '/presentation':
-            page = const PresentationScreen();
-            break;
-          case '/chat':
-            page = const ChatScreen();
-            break;
-          case '/profile':
-            page = const ProfileScreen();
-            break;
-          case '/profile_posts':          // <-- New route
-            page = const ProfilePostsScreen();
-            break;
-          default:
-            page = const LoginScreen();
-        }
-        return PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => page,
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(1.0, 0.0);
-            const end = Offset.zero;
-            const curve = Curves.easeOutCubic;
-            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-            var fadeTween = Tween(begin: 0.0, end: 1.0).chain(CurveTween(curve: curve));
-            return FadeTransition(
-              opacity: animation.drive(fadeTween),
-              child: SlideTransition(
-                position: animation.drive(tween),
-                child: child,
-              ),
-            );
-          },
-          transitionDuration: const Duration(milliseconds: 500),
-        );
-      },
     );
   }
 }

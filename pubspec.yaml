@@ -1,25 +1,39 @@
-name: my_project
-description: "A new Flutter project."
+name: teachlearn
+description: TeachLearn - AI Lecturer App
 publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.10.7
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.8
+  cupertino_icons: ^1.0.6
+
+  # State Management & UI
+  provider: ^6.1.1
+  google_fonts: ^6.1.0
+
+  # Firebase (Core only for now)
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.15.3
+
+  # Storage & Networking
+  shared_preferences: ^2.2.2
+  http: ^1.1.0
+  intl: ^0.18.0
+
+  # File Handling - Updated version
+  file_picker: ^8.0.0  # ✅ Updated from 6.1.1 to 8.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^6.0.0
+  flutter_lints: ^3.0.0
 
 flutter:
   uses-material-design: true
+
   assets:
-    #- lib/assets/ai.png
-    - lib/assets/profile.png
-    - lib/assets/image.png
-    # - lib/screens/image.png
+    - assets/courses.json
