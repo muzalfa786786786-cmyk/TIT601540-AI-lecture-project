@@ -31,11 +31,11 @@ A Flutter-based mobile application developed as part of my Mobile Application De
 ├── 📁 .dart_tool/
 ├── 📁 .gradle/
 ├── 📁 android/
-├── 📁 assets/          ✅ (ye root mein hona chahiye)
-│   └── 📄 courses.json ✅
+├── 📁 assets/          
+│   └── 📄 courses.json 
 ├── 📁 build/
 ├── 📁 ios/
-├── 📁 lib/             ✅ (ye root mein hona chahiye)
+├── 📁 lib/             
 │   ├── 📁 screens/
 │   ├── 📁 providers/
 │   ├── 📁 models/
