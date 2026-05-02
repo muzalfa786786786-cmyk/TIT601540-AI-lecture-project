@@ -1,6 +1,5 @@
 // lib/screens/slide_generator_screen.dart
 // AI Slide Generator with form, progress, and preview
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/slides_provider.dart';
@@ -8,11 +7,9 @@ import '../theme/app_theme.dart';
 
 class SlideGeneratorScreen extends StatefulWidget {
   const SlideGeneratorScreen({super.key});
-
   @override
   State<SlideGeneratorScreen> createState() => _SlideGeneratorScreenState();
 }
-
 class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
   final _formKey = GlobalKey<FormState>();
   final _topicCtrl = TextEditingController();

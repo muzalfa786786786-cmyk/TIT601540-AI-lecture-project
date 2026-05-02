@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';  // ✅ Commented for API Lab
 import 'package:shared_preferences/shared_preferences.dart';
-import '../routes/app_routes.dart';  // ✅ Add this import
+import '../routes/app_routes.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -11,8 +11,13 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  User? _user;
+  // final FirebaseAuth _auth = FirebaseAuth.instance;  // ✅ Commented for API Lab
+  // User? _user;  // ✅ Commented for API Lab
+
+  // ✅ Mock user data for API Lab
+  String _userName = "Muzalfa BiBi";
+  String _userEmail = "muzalfabibi@example.com";
+  String _userPhone = "+1 234 567 8900";
   bool _isLoading = true;
 
   // Settings toggles
@@ -32,7 +37,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadUserData() async {
     setState(() {
-      _user = _auth.currentUser;
       _isLoading = false;
     });
   }
@@ -74,36 +78,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
             TextButton(
               onPressed: () async {
                 Navigator.pop(context);
-                setState(() {
-                  _isLoading = true;
-                });
+                // try {
+                //   await _auth.signOut();  // ✅ Commented for API Lab
+                //   if (mounted) {
+                //     Navigator.pushNamedAndRemoveUntil(
+                //       context,
+                //       AppRoutes.auth,
+                //       (route) => false,
+                //     );
+                //   }
+                // } catch (e) {
+                //   if (mounted) {
+                //     ScaffoldMessenger.of(context).showSnackBar(
+                //       SnackBar(
+                //         content: Text('Error logging out: $e'),
+                //         backgroundColor: Colors.red,
+                //       ),
+                //     );
+                //   }
+                // }
 
-                try {
-                  await _auth.signOut();
-                  if (mounted) {
-                    // Navigate to auth screen
-                    Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      AppRoutes.auth,  // ✅ Changed from '/login' to AppRoutes.auth
-                          (route) => false,
-                    );
-                  }
-                } catch (e) {
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Error logging out: $e'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                } finally {
-                  if (mounted) {
-                    setState(() {
-                      _isLoading = false;
-                    });
-                  }
-                }
+                // ✅ Mock logout for API Lab
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Logged out successfully'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
               },
               style: TextButton.styleFrom(foregroundColor: Colors.red),
               child: const Text('Logout'),
@@ -115,8 +116,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showEditProfileDialog() {
-    final nameController = TextEditingController(text: _user?.displayName ?? '');
-    final emailController = TextEditingController(text: _user?.email ?? '');
+    final nameController = TextEditingController(text: _userName);
+    final phoneController = TextEditingController(text: _userPhone);
 
     showDialog(
       context: context,
@@ -136,13 +137,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(height: 16),
               TextField(
-                controller: emailController,
+                controller: TextEditingController(text: _userEmail),
                 decoration: const InputDecoration(
                   labelText: 'Email',
                   prefixIcon: Icon(Icons.email),
                   border: OutlineInputBorder(),
                 ),
-                enabled: false, // Email cannot be changed here
+                enabled: false,
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: phoneController,
+                decoration: const InputDecoration(
+                  labelText: 'Phone',
+                  prefixIcon: Icon(Icons.phone),
+                  border: OutlineInputBorder(),
+                ),
               ),
             ],
           ),
@@ -154,9 +164,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ElevatedButton(
               onPressed: () async {
                 if (nameController.text.isNotEmpty) {
-                  await _user?.updateDisplayName(nameController.text);
                   setState(() {
-                    _user = _auth.currentUser;
+                    _userName = nameController.text;
+                    _userPhone = phoneController.text;
                   });
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -221,73 +231,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       )
-          : _user == null
-          ? _buildNotLoggedIn()
           : SingleChildScrollView(
         child: Column(
           children: [
-            // Profile Header
             _buildProfileHeader(),
-
-            // Stats Cards
             _buildStatsCards(),
-
-            // Settings Section
             _buildSettingsSection(),
-
-            // Danger Zone
             _buildDangerZone(),
-
             const SizedBox(height: 20),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildNotLoggedIn() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.account_circle,
-            size: 100,
-            color: Colors.grey.shade400,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Not Logged In',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey.shade600,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Please login to access your profile',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade500,
-            ),
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pushNamed(context, AppRoutes.auth);  // ✅ Changed to AppRoutes.auth
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
-              ),
-            ),
-            child: const Text('Go to Login'),
-          ),
-        ],
       ),
     );
   }
@@ -307,7 +260,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         children: [
           const SizedBox(height: 30),
-          // Profile Image
           Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
@@ -322,33 +274,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: CircleAvatar(
               radius: 60,
               backgroundColor: Colors.red.shade100,
-              child: _user?.photoURL != null
-                  ? ClipOval(
-                child: Image.network(
-                  _user!.photoURL!,
-                  width: 120,
-                  height: 120,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Icon(
-                      Icons.person,
-                      size: 60,
-                      color: Colors.red.shade700,
-                    );
-                  },
-                ),
-              )
-                  : Icon(
+              child: const Icon(
                 Icons.person,
                 size: 60,
-                color: Colors.red.shade700,
+                color: Colors.red,
               ),
             ),
           ),
           const SizedBox(height: 16),
-          // Name
           Text(
-            _user?.displayName ?? 'User Name',
+            _userName,
             style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -356,7 +291,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           const SizedBox(height: 4),
-          // Email
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -367,7 +301,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(width: 4),
               Text(
-                _user?.email ?? 'user@example.com',
+                _userEmail,
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey.shade600,
@@ -375,35 +309,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          // Email Verified Badge
-          if (_user?.emailVerified ?? false)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.green.shade100,
-                borderRadius: BorderRadius.circular(20),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.phone,
+                size: 14,
+                color: Colors.grey.shade600,
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.verified,
-                    size: 14,
-                    color: Colors.green.shade700,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Email Verified',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.green.shade700,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
+              const SizedBox(width: 4),
+              Text(
+                _userPhone,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade600,
+                ),
               ),
-            ),
+            ],
+          ),
           const SizedBox(height: 24),
         ],
       ),
@@ -513,7 +437,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const Divider(height: 1),
 
-          // Notifications
           _buildSettingsTile(
             title: 'Push Notifications',
             subtitle: 'Receive notifications about your courses',
@@ -550,8 +473,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _darkModeEnabled = value;
                 _saveSettings();
               });
-              // Apply theme change
-              // You would need to implement theme switching in your app
             },
           ),
 
@@ -665,31 +586,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const Divider(height: 1, color: Colors.red),
 
-          // Change Password
-          ListTile(
-            leading: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(Icons.lock, color: Colors.red, size: 20),
-            ),
-            title: const Text(
-              'Change Password',
-              style: TextStyle(fontWeight: FontWeight.w500),
-            ),
-            subtitle: const Text(
-              'Update your password',
-              style: TextStyle(fontSize: 12),
-            ),
-            trailing: const Icon(Icons.chevron_right, color: Colors.red),
-            onTap: () {
-              _showChangePasswordDialog();
-            },
-          ),
-
-          // Logout Button
           ListTile(
             leading: Container(
               padding: const EdgeInsets.all(8),
@@ -713,104 +609,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             trailing: const Icon(Icons.chevron_right, color: Colors.red),
             onTap: _logout,
           ),
-
           const SizedBox(height: 8),
         ],
       ),
-    );
-  }
-
-  void _showChangePasswordDialog() {
-    final currentPasswordController = TextEditingController();
-    final newPasswordController = TextEditingController();
-    final confirmPasswordController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Change Password'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: currentPasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Current Password',
-                  prefixIcon: Icon(Icons.lock),
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: newPasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'New Password',
-                  prefixIcon: Icon(Icons.lock_outline),
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: confirmPasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Confirm New Password',
-                  prefixIcon: Icon(Icons.lock_outline),
-                  border: OutlineInputBorder(),
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                if (newPasswordController.text == confirmPasswordController.text) {
-                  try {
-                    // Re-authenticate and change password
-                    final user = _auth.currentUser;
-                    if (user != null && user.email != null) {
-                      // In production, you should re-authenticate first
-                      await user.updatePassword(newPasswordController.text);
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Password updated successfully'),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                    }
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Error: $e'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Passwords do not match'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-              ),
-              child: const Text('Update'),
-            ),
-          ],
-        );
-      },
     );
   }
 }

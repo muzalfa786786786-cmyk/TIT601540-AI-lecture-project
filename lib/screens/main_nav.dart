@@ -11,10 +11,6 @@ import 'slide_generator_screen.dart';
 import 'live_qa_screen.dart';
 import 'student_upload_screen.dart';
 import 'courses_screen.dart';
-import 'saved_slides_screen.dart';
-import 'whiteboard_screen.dart';
-import 'avatar_screen.dart';
-import 'profile_screen.dart';
 
 class MainNav extends StatefulWidget {
   const MainNav({super.key});
@@ -29,7 +25,7 @@ class _MainNavState extends State<MainNav> {
   void _goTo(int i) => setState(() => _currentIndex = i);
 
   late final List<Widget> _screens = [
-    HomeScreen(onNavigate: _goTo),
+    HomeScreen(onNavigate: _goTo),      // ✅ Shows users list from API
     const SlideGeneratorScreen(),
     const LiveQAScreen(),
     const StudentUploadScreen(),
@@ -107,7 +103,7 @@ class _MainNavState extends State<MainNav> {
                 children: [
                   CircleAvatar(
                     radius: 28,
-                    backgroundColor: Colors.white.withOpacity(0.2),
+                    backgroundColor: Colors.white.withValues(alpha: 0.2),
                     child: const Icon(Icons.person,
                         color: Colors.white, size: 32),
                   ),
@@ -123,14 +119,14 @@ class _MainNavState extends State<MainNav> {
                                 fontSize: 16)),
                         Text(user?.email ?? 'user@example.com',
                             style: TextStyle(
-                                color: Colors.white.withOpacity(0.8),
+                                color: Colors.white.withValues(alpha: 0.8),
                                 fontSize: 12)),
                         const SizedBox(height: 4),
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 2),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(

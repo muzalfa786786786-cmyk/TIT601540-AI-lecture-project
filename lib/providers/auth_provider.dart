@@ -2,7 +2,7 @@
 // Provider for authentication state management
 
 import 'package:flutter/material.dart';
-import '../models/user_model.dart';  // ✅ Fixed import (specific instead of models.dart)
+import '../models/user_model.dart';
 import '../services/auth_service.dart';
 
 class AuthProvider extends ChangeNotifier {
@@ -74,11 +74,11 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ─── Update User Profile ──────────────────────────────────────
-  Future<bool> updateProfile({String? name, String? photoURL}) async {
+  // ─── Update User Profile (Updated for phone field) ────────────
+  Future<bool> updateProfile({String? name, String? phone}) async {
     _setLoading(true);
     try {
-      await _authService.updateUserProfile(name: name, photoURL: photoURL);
+      await _authService.updateUserProfile(name: name, phone: phone);
       // Refresh user data
       _user = await _authService.getCurrentUser();
       notifyListeners();

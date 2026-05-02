@@ -1,7 +1,5 @@
-// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 // Theme & Routes
 import 'theme/app_theme.dart';
@@ -28,13 +26,6 @@ import 'providers/chat_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  try {
-    await Firebase.initializeApp();
-  } catch (e) {
-    debugPrint('Firebase initialization error: $e');
-  }
-
   runApp(const TeachLearnApp());
 }
 
@@ -58,6 +49,7 @@ class TeachLearnApp extends StatelessWidget {
           AppRoutes.splash: (_) => const SplashScreen(),
           AppRoutes.auth: (_) => const AuthScreen(),
           AppRoutes.main: (_) => const MainNav(),
+          // Removed 'const' here because (i) {} is a closure and cannot be constant.
           AppRoutes.home: (_) => HomeScreen(onNavigate: (i) {}),
           AppRoutes.aiSlides: (_) => const SlideGeneratorScreen(),
           AppRoutes.liveQA: (_) => const LiveQAScreen(),

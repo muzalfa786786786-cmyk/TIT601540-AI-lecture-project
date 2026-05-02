@@ -1,8 +1,8 @@
 // lib/services/auth_service.dart
-// Authentication service — mock implementation
-// Replace with Firebase Auth in production
+// Authentication service — Simplified for API Integration Lab
+// Note: This is separate from the JSONPlaceholder API users
 
-import '../models/user_model.dart';  // ✅ Fixed import
+import '../models/user_model.dart';
 
 class AuthService {
   UserModel? _currentUser;
@@ -16,23 +16,24 @@ class AuthService {
     return _currentUser;
   }
 
-  // ─── Mock Login ───────────────────────────────────────────────
+  // ─── Mock Login (For app authentication, not API users) ───────
   Future<UserModel?> login({
     required String email,
     required String password,
   }) async {
-    await Future.delayed(const Duration(milliseconds: 1200));
+    await Future.delayed(const Duration(milliseconds: 800));
 
-    // Mock validation
-    if (email.isEmpty || password.length < 6) {
-      throw Exception('Invalid credentials');
+    // Simple validation
+    if (email.isEmpty || password.isEmpty) {
+      throw Exception('Email and password are required');
     }
 
+    // Demo user (separate from API users list)
     _currentUser = UserModel(
-      id: 'user_001',  // ✅ Changed from uid to id
+      id: 1, // ✅ Changed to int
       name: email.split('@').first,
       email: email,
-      role: 'student',
+      phone: '123-456-7890',
     );
     return _currentUser;
   }
@@ -44,17 +45,17 @@ class AuthService {
     required String password,
     required String role,
   }) async {
-    await Future.delayed(const Duration(milliseconds: 1400));
+    await Future.delayed(const Duration(milliseconds: 1000));
 
-    if (email.isEmpty || password.length < 6 || name.isEmpty) {
+    if (email.isEmpty || password.isEmpty || name.isEmpty) {
       throw Exception('Please fill all fields correctly');
     }
 
     _currentUser = UserModel(
-      id: 'user_${DateTime.now().millisecondsSinceEpoch}',  // ✅ Changed from uid to id
+      id: DateTime.now().millisecondsSinceEpoch, // ✅ Changed to int
       name: name,
       email: email,
-      role: role,
+      phone: '',
     );
     return _currentUser;
   }
@@ -62,7 +63,7 @@ class AuthService {
   // ─── Update User Profile ──────────────────────────────────────
   Future<void> updateUserProfile({
     String? name,
-    String? photoURL,
+    String? phone,
   }) async {
     await Future.delayed(const Duration(milliseconds: 500));
 
@@ -71,9 +72,7 @@ class AuthService {
         id: _currentUser!.id,
         name: name ?? _currentUser!.name,
         email: _currentUser!.email,
-        role: _currentUser!.role,
-        photoURL: photoURL ?? _currentUser!.photoURL,
-        createdAt: _currentUser!.createdAt,
+        phone: phone ?? _currentUser!.phone,
       );
     }
   }
@@ -86,28 +85,7 @@ class AuthService {
 
   // ─── Reset Password ───────────────────────────────────────────
   Future<void> resetPassword(String email) async {
-    await Future.delayed(const Duration(milliseconds: 800));
+    await Future.delayed(const Duration(milliseconds: 500));
     if (email.isEmpty) throw Exception('Enter a valid email');
   }
 }
-
-/*
- * ─── FIREBASE INTEGRATION GUIDE ───────────────────────────────
- * To use real Firebase Auth, replace the methods above with:
- *
- * import 'package:firebase_auth/firebase_auth.dart';
- * import 'package:cloud_firestore/cloud_firestore.dart';
- *
- * final FirebaseAuth _auth = FirebaseAuth.instance;
- * final FirebaseFirestore _db = FirebaseFirestore.instance;
- *
- * Future<UserModel?> login({...}) async {
- *   final cred = await _auth.signInWithEmailAndPassword(
- *     email: email, password: password);
- *   final doc = await _db.collection('users').doc(cred.user!.uid).get();
- *   return UserModel.fromJson(doc.data()!, doc.id);
- * }
- *
- * Also add google-services.json (Android) and
- * GoogleService-Info.plist (iOS) to your project.
- */

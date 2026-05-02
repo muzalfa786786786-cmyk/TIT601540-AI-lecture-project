@@ -2,8 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// Uncomment for TTS functionality
-// import 'package:flutter_tts/flutter_tts.dart';
 
 class AvatarScreen extends StatefulWidget {
   const AvatarScreen({super.key});
@@ -17,10 +15,6 @@ class _AvatarScreenState extends State<AvatarScreen> {
   String _selectedVoice = "en-US-Neural2-F";
   bool _isStartingPresentation = false;
 
-  // Optional: Text-to-Speech instance
-  // late FlutterTts _flutterTts;
-
-  // Voice options for different accents and genders
   final List<VoiceOption> _voiceOptions = [
     VoiceOption(
       id: "en-US-Neural2-F",
@@ -66,51 +60,6 @@ class _AvatarScreenState extends State<AvatarScreen> {
     ),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    // Initialize TTS if using
-    // _initTTS();
-  }
-
-  // Optional: Initialize Text-to-Speech
-  /*
-  Future<void> _initTTS() async {
-    _flutterTts = FlutterTts();
-
-    await _flutterTts.setSharedInstance(true);
-    await _flutterTts.setLanguage("en-US");
-    await _flutterTts.setSpeechRate(0.5);
-    await _flutterTts.setPitch(1.0);
-
-    _flutterTts.setStartHandler(() {
-      print("TTS started");
-    });
-
-    _flutterTts.setCompletionHandler(() {
-      print("TTS completed");
-      setState(() {
-        _isStartingPresentation = false;
-      });
-    });
-
-    _flutterTts.setErrorHandler((msg) {
-      print("TTS error: $msg");
-      setState(() {
-        _isStartingPresentation = false;
-      });
-    });
-  }
-
-  Future<void> _speak(String text) async {
-    await _flutterTts.speak(text);
-  }
-
-  Future<void> _stopSpeaking() async {
-    await _flutterTts.stop();
-  }
-  */
-
   Future<void> _startPresentation() async {
     if (_selectedAvatar == null) {
       _showSnackBar('Please select an AI teacher first', Colors.orange);
@@ -121,25 +70,19 @@ class _AvatarScreenState extends State<AvatarScreen> {
       _isStartingPresentation = true;
     });
 
-    // Simulate presentation setup
     await Future.delayed(const Duration(seconds: 2));
 
     setState(() {
       _isStartingPresentation = false;
     });
 
-    // Show success message with selected options
     final selectedVoice = _voiceOptions.firstWhere((v) => v.id == _selectedVoice);
 
     _showSnackBar(
-      'Starting presentation with ${_selectedAvatar == AvatarType.male ? "Mr." : "Ms."} ${_selectedAvatar == AvatarType.male ? "Anderson" : "Smith"} using ${selectedVoice.name} voice',
+      'Starting presentation with ${_selectedAvatar == AvatarType.male ? "Mr." : "Ms."} ${_selectedAvatar == AvatarType.male ? "Abdul Rehman" : "Muzalfa BiBi"} using ${selectedVoice.name} voice',
       Colors.green,
     );
 
-    // Optional: Speak welcome message
-    // await _speak("Hello everyone! Welcome to the presentation. I'm your AI teacher.");
-
-    // Navigate to presentation screen or show dialog
     _showPresentationDialog();
   }
 
@@ -202,7 +145,6 @@ class _AvatarScreenState extends State<AvatarScreen> {
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.pop(context);
-                          // Navigate to actual presentation screen
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
@@ -264,7 +206,6 @@ class _AvatarScreenState extends State<AvatarScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header Section
                   const Text(
                     'Choose Your AI Teacher',
                     style: TextStyle(
@@ -283,17 +224,16 @@ class _AvatarScreenState extends State<AvatarScreen> {
                   ),
                   const SizedBox(height: 32),
 
-                  // Avatars Grid
                   Row(
                     children: [
                       Expanded(
                         child: _buildAvatarCard(
                           type: AvatarType.male,
-                          name: 'James Anderson',
+                          name: 'Abdul Rehman',
                           title: 'Senior AI Instructor',
                           specialization: 'Computer Science & AI',
                           experience: '12+ years',
-                          imageUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+                          imageUrl: 'assets/images/male-teacher.jpeg',
                           color: Colors.blue,
                         ),
                       ),
@@ -301,11 +241,11 @@ class _AvatarScreenState extends State<AvatarScreen> {
                       Expanded(
                         child: _buildAvatarCard(
                           type: AvatarType.female,
-                          name: 'Dr. Sarah Smith',
+                          name: 'Muzalfa BiBi',
                           title: 'Lead AI Educator',
                           specialization: 'Data Science & Analytics',
-                          experience: '15+ years',
-                          imageUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+                          experience: '5+ years',
+                          imageUrl: 'assets/images/female-teacher.png',
                           color: Colors.pink,
                         ),
                       ),
@@ -314,7 +254,6 @@ class _AvatarScreenState extends State<AvatarScreen> {
 
                   const SizedBox(height: 32),
 
-                  // Voice Selection Section
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
@@ -437,7 +376,6 @@ class _AvatarScreenState extends State<AvatarScreen> {
 
                   const SizedBox(height: 20),
 
-                  // Info Card
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -476,7 +414,6 @@ class _AvatarScreenState extends State<AvatarScreen> {
             ),
           ),
 
-          // Start Presentation Button
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -568,32 +505,21 @@ class _AvatarScreenState extends State<AvatarScreen> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
             side: isSelected
-                ? const BorderSide(color: Colors.red, width: 3)  // ✅ Fixed const
+                ? const BorderSide(color: Colors.red, width: 3)
                 : BorderSide.none,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Avatar Image
               ClipRRect(
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
                 ),
-                child: Image.network(
+                child: Image.asset(
                   imageUrl,
                   height: 180,
                   fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Container(
-                      height: 180,
-                      color: Colors.grey.shade200,
-                      child: const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
-                  },
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
                       height: 180,
@@ -608,7 +534,6 @@ class _AvatarScreenState extends State<AvatarScreen> {
                 ),
               ),
 
-              // Avatar Info
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -670,7 +595,6 @@ class _AvatarScreenState extends State<AvatarScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Select Button
                     ElevatedButton(
                       onPressed: () {
                         setState(() {
@@ -705,7 +629,6 @@ class _AvatarScreenState extends State<AvatarScreen> {
   }
 }
 
-// Enums and Models
 enum AvatarType {
   male,
   female,

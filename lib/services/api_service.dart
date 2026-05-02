@@ -1,13 +1,10 @@
 import 'dart:math';
 // import 'package:google_generative_ai/google_generative_ai.dart';  // ✅ Comment out for now
 import '../models/models.dart';
-
 class ApiService {
   static final Random _rand = Random();
-
   // ⚠️ Replace this with your actual API key from https://aistudio.google.com/
   static const String _apiKey = 'AIzaSyCIuj7NIXV3l3oTPOVqnftriZNr3sAPZ3Q';  // ✅ Changed to placeholder
-
   // ─── Real AI Slide Generation (Gemini) ─────────────────────────
   static Future<List<String>> generateSlides({
     required String topic,

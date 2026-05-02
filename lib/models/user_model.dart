@@ -1,76 +1,49 @@
 // lib/models/user_model.dart
-
 class UserModel {
-  final String id;
+  final int id;
   final String name;
   final String email;
-  final String role;
-  final String? photoURL;
-  final DateTime? createdAt;
-
+  final String phone;
+  final String role; // ✅ Added role back
   UserModel({
     required this.id,
     required this.name,
     required this.email,
-    required this.role,
-    this.photoURL,
-    this.createdAt,
+    required this.phone,
+    this.role = 'student', // Default role
   });
-
-  // For Firestore
-  factory UserModel.fromFirestore(Map<String, dynamic> data, String id) {
+  factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: id,
-      name: data['name'] ?? '',
-      email: data['email'] ?? '',
-      role: data['role'] ?? 'student',
-      photoURL: data['photoURL'],
-      createdAt: data['createdAt'] != null
-          ? (data['createdAt'] as dynamic).toDate()  // ✅ Fixed: handle Timestamp
-          : null,
-    );
-  }
-
-  // For JSON storage (SharedPreferences)
-  factory UserModel.fromJson(Map<String, dynamic> json, String id) {
-    return UserModel(
-      id: id,
+      id: json['id'],
       name: json['name'] ?? '',
       email: json['email'] ?? '',
+      phone: json['phone'] ?? '',
       role: json['role'] ?? 'student',
-      photoURL: json['photoURL'],
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
-          : null,
     );
   }
-
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'name': name,
       'email': email,
+      'phone': phone,
       'role': role,
-      'photoURL': photoURL,
-      'createdAt': createdAt?.toIso8601String(),
     };
   }
 
-  // Copy with method for updates
   UserModel copyWith({
-    String? id,
+    int? id,
     String? name,
     String? email,
+    String? phone,
     String? role,
-    String? photoURL,
-    DateTime? createdAt,
   }) {
     return UserModel(
       id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,
+      phone: phone ?? this.phone,
       role: role ?? this.role,
-      photoURL: photoURL ?? this.photoURL,
-      createdAt: createdAt ?? this.createdAt,
     );
   }
 }

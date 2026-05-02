@@ -2,41 +2,28 @@ name: teachlearn
 description: TeachLearn - AI Lecturer App
 publish_to: 'none'
 version: 1.0.0+1
-
 environment:
   sdk: '>=3.0.0 <4.0.0'
-
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.6
-
   # State Management & UI
   provider: ^6.1.1
   google_fonts: ^6.1.0
-
-  # AI & Generative AI
-  google_generative_ai: ^0.4.0
-
-  # Firebase (Core only for now)
-  firebase_core: ^2.24.2
-  firebase_auth: ^4.15.3
-
-  # Storage & Networking
-  shared_preferences: ^2.2.2
+  # Networking & API
   http: ^1.1.0
+  # Storage
+  shared_preferences: ^2.2.2
   intl: ^0.18.0
-
-  # File Handling - Updated version
+  # File Handling
   file_picker: ^8.0.0
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
-
 flutter:
   uses-material-design: true
-
   assets:
     - assets/courses.json
+    - assets/images/
