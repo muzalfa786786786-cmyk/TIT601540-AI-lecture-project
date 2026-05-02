@@ -59,17 +59,14 @@ flutter run
 
 ## 📸 Screenshots
 
-<img width="1141" height="815" alt="Screenshot 2026-04-12 203239" src="https://github.com/user-attachments/assets/135f99cc-11a6-4688-ad83-db03dc0c6894" />
-<img width="1144" height="810" alt="Screenshot 2026-04-12 203351" src="https://github.com/user-attachments/assets/c3bc3d5f-a47d-4bc8-9f68-b229f44d80c8" />
-<img width="557" height="800" alt="Screenshot 2026-04-12 211200" src="https://github.com/user-attachments/assets/55fd59f9-26c1-4fa1-914e-3cf1a46f05af" />
-<img width="585" height="802" alt="Screenshot 2026-04-12 223122" src="https://github.com/user-attachments/assets/74064390-88bd-4284-80f5-276f0013f3a2" />
-<img width="578" height="796" alt="Screenshot 2026-04-12 223217" src="https://github.com/user-attachments/assets/3b2dc5a9-ab85-415a-8060-70f24c091322" />
-<img width="605" height="798" alt="Screenshot 2026-04-12 223250" src="https://github.com/user-attachments/assets/9a20a8c4-4dc4-4751-9486-8a466d3ffff7" />
-<img width="831" height="1214" alt="image" src="https://github.com/user-attachments/assets/54420342-6511-4cf2-ae05-e4698608f9a6" />
-<img width="863" height="1214" alt="image" src="https://github.com/user-attachments/assets/ff44b89b-a067-42ca-8537-7b19f426f214" />
-<img width="761" height="1206" alt="image" src="https://github.com/user-attachments/assets/fb55c7cc-952f-4644-9793-f7bae7517470" />
-<img width="436" height="769" alt="Screenshot 2026-04-17 135431" src="https://github.com/user-attachments/assets/ad170a40-f932-49f4-b4df-c6fcdc66c8fa" />
-<img width="459" height="765" alt="Screenshot 2026-04-17 135501" src="https://github.com/user-attachments/assets/02bf26c7-2f5e-44a2-82da-aa53fd6cb214" />
+<img width="420" height="706" alt="img1" src="https://github.com/user-attachments/assets/f97afd05-d510-48da-92f2-63340b38e71d" />
+<img width="523" height="933" alt="image" src="https://github.com/user-attachments/assets/e3103a90-775f-44f2-9e89-dc23afc3f420" />
+<img width="419" height="707" alt="img2" src="https://github.com/user-attachments/assets/e91145e1-30f6-45cf-9f76-cc28ec479932" />
+<img width="442" height="749" alt="img3" src="https://github.com/user-attachments/assets/dba60838-ea38-4dd0-b58b-6c6a2e3b1a21" />
+<img width="491" height="927" alt="image" src="https://github.com/user-attachments/assets/b712e894-7d4d-43d8-9013-1a39804ef4f9" />
+<img width="521" height="927" alt="image" src="https://github.com/user-attachments/assets/2157709f-9dc3-4437-9d78-3b3a5ea11636" />
+<img width="502" height="930" alt="image" src="https://github.com/user-attachments/assets/db984b37-44d0-4274-acec-dc4810b15b81" />
+
 
 
 
