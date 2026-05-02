@@ -27,18 +27,21 @@ A Flutter-based mobile application developed as part of my Mobile Application De
 
 ## 📂 Project Structure
 ```
-my_project/
-│
-├── android/          # Android native files  
-├── ios/              # iOS native files  
-├── lib/              # Main application code  
-│   ├── screens/      # All app screens  
-│   ├── widgets/      # Reusable custom widgets  
-│   └── main.dart     # App entry point  
-├── test/             # Testing files  
-├── build/            # Build output  
-├── pubspec.yaml      # Dependencies  
-└── README.md         # Documentation  
+📁 TIT601540-AI-lecture-project/
+├── 📁 .dart_tool/
+├── 📁 .gradle/
+├── 📁 android/
+├── 📁 assets/          ✅ (ye root mein hona chahiye)
+│   └── 📄 courses.json ✅
+├── 📁 build/
+├── 📁 ios/
+├── 📁 lib/             ✅ (ye root mein hona chahiye)
+│   ├── 📁 screens/
+│   ├── 📁 providers/
+│   ├── 📁 models/
+│   └── 📄 main.dart
+├── 📁 test/
+└── 📄 pubspec.yaml
 ```
 
 ## ▶️ Getting Started
