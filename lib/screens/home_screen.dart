@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
 import '../routes/app_routes.dart';
-import '../widgets/common_widgets.dart';
 
 class HomeScreen extends StatelessWidget {
   final Function(int) onNavigate;
@@ -18,6 +17,7 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       body: CustomScrollView(
+        physics: const BouncingScrollPhysics(), // ✅ Smooth scrolling
         slivers: [
           // ─── Sliver App Bar ─────────────────────────────────
           SliverAppBar(
@@ -28,19 +28,33 @@ class HomeScreen extends StatelessWidget {
             leading: Builder(
               builder: (ctx) => IconButton(
                 icon: const Icon(Icons.menu_rounded, color: Colors.white),
-                onPressed: () => Scaffold.of(ctx).openDrawer(),
+                onPressed: () => Scaffold.of(ctx).openDrawer(), // ✅ Drawer opens
               ),
             ),
             actions: [
               IconButton(
                 icon: const Icon(Icons.notifications_outlined,
                     color: Colors.white),
-                onPressed: () {},
+                onPressed: () {
+                  // ✅ Notification click
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('No new notifications'),
+                      duration: Duration(seconds: 1),
+                    ),
+                  );
+                },
               ),
-              const CircleAvatar(
-                radius: 16,
-                backgroundColor: Colors.white24,
-                child: Icon(Icons.person, color: Colors.white, size: 20),
+              GestureDetector(
+                onTap: () {
+                  // ✅ Profile avatar click - navigate to profile
+                  Navigator.pushNamed(context, AppRoutes.profile);
+                },
+                child: const CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Colors.white24,
+                  child: Icon(Icons.person, color: Colors.white, size: 20),
+                ),
               ),
               const SizedBox(width: 12),
             ],
@@ -130,43 +144,111 @@ class HomeScreen extends StatelessWidget {
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
                   childAspectRatio: 1.5,
-                  children: const [
-                    StatCard(value: '12', label: 'Active Courses',
-                        icon: Icons.book_rounded, color: AppTheme.primary),
-                    StatCard(value: '48', label: 'Slides Generated',
-                        icon: Icons.slideshow_rounded, color: Colors.blue),
-                    StatCard(value: '36', label: 'Q&A Sessions',
-                        icon: Icons.question_answer_rounded, color: Colors.green),
-                    StatCard(value: '5h 20m', label: 'Study Time',
-                        icon: Icons.timer_rounded, color: Colors.orange),
+                  children: [
+                    _buildStatCard('12', 'Active Courses', Icons.book_rounded, AppTheme.primary, context),
+                    _buildStatCard('48', 'Slides Generated', Icons.slideshow_rounded, Colors.blue, context),
+                    _buildStatCard('36', 'Q&A Sessions', Icons.question_answer_rounded, Colors.green, context),
+                    _buildStatCard('5h 20m', 'Study Time', Icons.timer_rounded, Colors.orange, context),
                   ],
                 ),
 
                 const SizedBox(height: 28),
 
                 // Quick Actions
-                const SectionHeader(
-                  title: 'Quick Actions',
-                  action: 'See all',
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Quick Actions',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        // ✅ See all quick actions
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('All quick actions available in drawer'),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        'See all',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: AppTheme.primary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 14),
                 _buildQuickActions(context),
 
                 const SizedBox(height: 28),
 
-                // Recent Activity
-                const SectionHeader(
-                  title: 'Recent Courses',
-                  action: 'View all',
+                // Recent Courses
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Recent Courses',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        // ✅ View all courses
+                        onNavigate(4); // Navigate to Courses tab
+                      },
+                      child: Text(
+                        'View all',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: AppTheme.primary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 14),
                 _buildRecentCourses(context),
 
                 const SizedBox(height: 28),
 
-                const SectionHeader(
-                  title: 'Saved Slides',
-                  action: 'View all',
+                // Saved Slides
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Saved Slides',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        // ✅ View all saved slides
+                        Navigator.pushNamed(context, AppRoutes.saved);
+                      },
+                      child: Text(
+                        'View all',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: AppTheme.primary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 14),
                 _buildSavedSlides(context),
@@ -185,6 +267,62 @@ class HomeScreen extends StatelessWidget {
     if (hour < 12) return 'Good Morning 👋';
     if (hour < 17) return 'Good Afternoon 👋';
     return 'Good Evening 👋';
+  }
+
+  // ✅ Stat Card with click functionality
+  Widget _buildStatCard(String value, String label, IconData icon, Color color, BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Viewing $label'),
+            duration: const Duration(seconds: 1),
+          ),
+        );
+      },
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: color, size: 20),
+              ),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    value,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: AppTheme.textMuted,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildQuickActions(BuildContext context) {
@@ -261,55 +399,61 @@ class HomeScreen extends StatelessWidget {
 
     return Column(
       children: courses.map((c) {
-        return Card(
-          margin: const EdgeInsets.only(bottom: 12),
-          elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(14),
-            child: Row(
-              children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: c.$4.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+        return GestureDetector(
+          onTap: () {
+            // ✅ Course click - navigate to courses
+            onNavigate(4);
+          },
+          child: Card(
+            margin: const EdgeInsets.only(bottom: 12),
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Row(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: c.$4.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(Icons.menu_book_rounded,
+                        color: c.$4, size: 24),
                   ),
-                  child: Icon(Icons.menu_book_rounded,
-                      color: c.$4, size: 24),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(c.$1,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w600, fontSize: 14)),
-                      Text(c.$2,
-                          style: const TextStyle(
-                              fontSize: 12, color: AppTheme.textMuted)),
-                      const SizedBox(height: 6),
-                      LinearProgressIndicator(
-                        value: c.$3,
-                        backgroundColor: AppTheme.divider,
-                        valueColor: AlwaysStoppedAnimation(c.$4),
-                        borderRadius: BorderRadius.circular(4),
-                        minHeight: 5,
-                      ),
-                    ],
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(c.$1,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w600, fontSize: 14)),
+                        Text(c.$2,
+                            style: const TextStyle(
+                                fontSize: 12, color: AppTheme.textMuted)),
+                        const SizedBox(height: 6),
+                        LinearProgressIndicator(
+                          value: c.$3,
+                          backgroundColor: AppTheme.divider,
+                          valueColor: AlwaysStoppedAnimation(c.$4),
+                          borderRadius: BorderRadius.circular(4),
+                          minHeight: 5,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Text('${(c.$3 * 100).toInt()}%',
-                    style: TextStyle(
-                        color: c.$4,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 13)),
-              ],
+                  const SizedBox(width: 12),
+                  Text('${(c.$3 * 100).toInt()}%',
+                      style: TextStyle(
+                          color: c.$4,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13)),
+                ],
+              ),
             ),
           ),
         );
@@ -363,110 +507,6 @@ class HomeScreen extends StatelessWidget {
           );
         },
       ),
-    );
-  }
-}
-
-// ─── Stat Card Widget ─────────────────────────────────────────
-class StatCard extends StatelessWidget {
-  final String value;
-  final String label;
-  final IconData icon;
-  final Color color;
-
-  const StatCard({
-    super.key,
-    required this.value,
-    required this.label,
-    required this.icon,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(icon, color: color, size: 20),
-            ),
-            const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: AppTheme.textMuted,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ─── Section Header Widget ────────────────────────────────────
-class SectionHeader extends StatelessWidget {
-  final String title;
-  final String? action;
-  final VoidCallback? onAction;
-
-  const SectionHeader({
-    super.key,
-    required this.title,
-    this.action,
-    this.onAction,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        if (action != null)
-          GestureDetector(
-            onTap: onAction,
-            child: Text(
-              action!,
-              style: TextStyle(
-                fontSize: 13,
-                color: AppTheme.primary,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-      ],
     );
   }
 }

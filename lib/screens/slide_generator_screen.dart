@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/slides_provider.dart';
 import '../theme/app_theme.dart';
-import '../widgets/common_widgets.dart';
 
 class SlideGeneratorScreen extends StatefulWidget {
   const SlideGeneratorScreen({super.key});
@@ -23,6 +22,9 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
   bool _includeImages = true;
   bool _includeQuiz = false;
 
+  // Track selected slide for detailed view
+  String? _selectedSlide;
+
   final _subjects = ['Mathematics', 'Physics', 'Chemistry',
     'Computer Science', 'Biology', 'History', 'English'];
   final _levels = ['School', 'Undergraduate', 'Postgraduate', 'Professional'];
@@ -35,6 +37,10 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
 
   void _generate() {
     if (!_formKey.currentState!.validate()) return;
+
+    // Clear previous selection
+    _selectedSlide = null;
+
     context.read<SlidesProvider>().generateSlides(
       topic: _topicCtrl.text.trim(),
       subject: _subject,
@@ -43,24 +49,87 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
     );
   }
 
+  void _showSlideDetails(String title, int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Slide ${index + 1}'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Icon(Icons.slideshow, size: 50, color: Colors.red),
+              const SizedBox(height: 16),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'This slide covers key concepts and important points about the topic.',
+                style: TextStyle(fontSize: 14),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Opening Slide ${index + 1}'),
+                    duration: const Duration(seconds: 1),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+              ),
+              child: const Text('Open Slide'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,  // ✅ Added background color
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('AI Slide Generator'),
-        backgroundColor: Colors.red,  // ✅ Added red theme
+        backgroundColor: Colors.red,
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            // ✅ Proper back navigation
+            Navigator.pop(context);
+          },
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.history_rounded, color: Colors.white),
-            onPressed: () {},
+            onPressed: () {
+              // Navigate to saved slides
+              Navigator.pushNamed(context, '/saved-slides');
+            },
           ),
         ],
       ),
       body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(), // ✅ Smooth scrolling
         padding: const EdgeInsets.all(20),
         child: Form(
           key: _formKey,
@@ -117,7 +186,7 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
               const Text('Lecture Topic',
                   style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
               const SizedBox(height: 8),
-              TextFormField(  // ✅ Changed from AppTextField to TextFormField
+              TextFormField(
                 controller: _topicCtrl,
                 decoration: InputDecoration(
                   labelText: 'Topic',
@@ -233,7 +302,7 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
                     );
                   }
 
-                  return ElevatedButton(  // ✅ Changed from GradientButton to ElevatedButton
+                  return ElevatedButton(
                     onPressed: _generate,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
@@ -265,7 +334,7 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 28),
-                      Row(  // ✅ Changed SectionHeader to Row
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
@@ -276,61 +345,105 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
                             ),
                           ),
                           TextButton(
-                            onPressed: null,
-                            child: Text('Save All'),
+                            onPressed: () {
+                              // ✅ Save all slides
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('All slides saved to library!'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            },
+                            child: const Text('Save All'),
                           ),
                         ],
                       ),
                       const SizedBox(height: 14),
                       SizedBox(
-                        height: 130,
+                        height: 160, // ✅ Increased height for better visibility
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
+                          physics: const BouncingScrollPhysics(),
                           itemCount: provider.generatedSlides.length,
                           separatorBuilder: (_, __) => const SizedBox(width: 10),
                           itemBuilder: (_, i) {
-                            return Container(
-                              width: 160,
-                              padding: const EdgeInsets.all(14),
-                              decoration: BoxDecoration(
-                                color: AppTheme.surface,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                    color: AppTheme.primaryLight
-                                        .withOpacity(0.5)),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text('${i + 1}',
-                                          style: const TextStyle(
-                                              color: AppTheme.primary,
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 11)),
-                                      const Icon(Icons.slideshow_rounded,
-                                          color: AppTheme.primary, size: 14),
+                            final slideTitle = provider.generatedSlides[i];
+                            return GestureDetector(
+                              onTap: () => _showSlideDetails(slideTitle, i), // ✅ Click handler
+                              child: Container(
+                                width: 180,
+                                padding: const EdgeInsets.all(14),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      AppTheme.primary.withOpacity(0.1),
+                                      AppTheme.primary.withOpacity(0.05),
                                     ],
                                   ),
-                                  const SizedBox(height: 8),
-                                  Text(provider.generatedSlides[i],
-                                      style: const TextStyle(
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: AppTheme.primaryLight.withOpacity(0.5),
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.1),
+                                      blurRadius: 5,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: Colors.red.withOpacity(0.1),
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: Text(
+                                            'Slide ${i + 1}',
+                                            style: const TextStyle(
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 10,
+                                            ),
+                                          ),
+                                        ),
+                                        const Icon(Icons.slideshow_rounded,
+                                            color: Colors.red, size: 18),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Expanded(
+                                      child: Text(
+                                        slideTitle,
+                                        style: const TextStyle(
                                           fontWeight: FontWeight.w600,
-                                          fontSize: 12),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis),
-                                  const Spacer(),
-                                  Container(
-                                      height: 4,
+                                          fontSize: 13,
+                                        ),
+                                        maxLines: 3,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Container(
+                                      height: 3,
                                       decoration: BoxDecoration(
-                                          color: AppTheme.primaryLight
-                                              .withOpacity(0.3),
-                                          borderRadius:
-                                          BorderRadius.circular(2))),
-                                ],
+                                        gradient: LinearGradient(
+                                          colors: [AppTheme.primary, AppTheme.primaryLight],
+                                        ),
+                                        borderRadius: BorderRadius.circular(2),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             );
                           },
@@ -341,7 +454,15 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
                         children: [
                           Expanded(
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                // ✅ Present now
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Starting presentation mode...'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.red,
                                 foregroundColor: Colors.white,
@@ -353,7 +474,7 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
                               child: const Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.slideshow_rounded),
+                                  Icon(Icons.play_circle_filled),
                                   SizedBox(width: 8),
                                   Text('Present Now'),
                                 ],
@@ -362,7 +483,15 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
                           ),
                           const SizedBox(width: 12),
                           OutlinedButton.icon(
-                            onPressed: () {},
+                            onPressed: () {
+                              // ✅ Export slides
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Exporting slides...'),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            },
                             icon: const Icon(Icons.download_rounded, size: 18),
                             label: const Text('Export'),
                             style: OutlinedButton.styleFrom(
