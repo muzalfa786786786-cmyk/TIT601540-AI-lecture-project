@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
-import '../routes/app_routes.dart';  // ✅ Changed from utils to routes
+import '../routes/app_routes.dart';
 import '../widgets/common_widgets.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -52,18 +52,24 @@ class _AuthScreenState extends State<AuthScreen>
     super.dispose();
   }
 
-  void _onLogin() async {
+  Future<void> _onLogin() async {
     if (!_loginFormKey.currentState!.validate()) return;
+
     final auth = context.read<AuthProvider>();
     final success = await auth.login(
-        _loginEmailCtrl.text.trim(), _loginPassCtrl.text.trim());
+      _loginEmailCtrl.text.trim(),
+      _loginPassCtrl.text.trim(),
+    );
+
     if (success && mounted) {
-      Navigator.pushReplacementNamed(context, AppRoutes.main);  // ✅ Changed to main
+      // Navigate to main screen after successful login
+      Navigator.pushReplacementNamed(context, AppRoutes.main);
     }
   }
 
-  void _onRegister() async {
+  Future<void> _onRegister() async {
     if (!_regFormKey.currentState!.validate()) return;
+
     final auth = context.read<AuthProvider>();
     final success = await auth.register(
       _regNameCtrl.text.trim(),
@@ -71,9 +77,66 @@ class _AuthScreenState extends State<AuthScreen>
       _regPassCtrl.text.trim(),
       _selectedRole.toLowerCase(),
     );
+
     if (success && mounted) {
-      Navigator.pushReplacementNamed(context, AppRoutes.main);  // ✅ Changed to main
+      // Navigate to main screen after successful registration
+      Navigator.pushReplacementNamed(context, AppRoutes.main);
     }
+  }
+
+  void _onForgotPassword() {
+    final emailController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: const Text('Reset Password'),
+        content: TextField(
+          controller: emailController,
+          decoration: const InputDecoration(
+            hintText: 'Enter your email',
+            border: OutlineInputBorder(),
+          ),
+          keyboardType: TextInputType.emailAddress,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final email = emailController.text.trim();
+              if (email.isNotEmpty) {
+                final auth = context.read<AuthProvider>();
+                final success = await auth.resetPassword(email);
+
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        success
+                            ? 'Password reset email sent to $email'
+                            : 'Failed to send reset email. Please try again.',
+                      ),
+                      backgroundColor: success ? Colors.green : Colors.red,
+                    ),
+                  );
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primary,
+            ),
+            child: const Text('Send Reset Email'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -82,6 +145,7 @@ class _AuthScreenState extends State<AuthScreen>
       backgroundColor: AppTheme.background,
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             children: [
@@ -181,7 +245,7 @@ class _AuthScreenState extends State<AuthScreen>
 
               // ─── Tab Views ─────────────────────────────────
               SizedBox(
-                height: 440,
+                height: 460,
                 child: TabBarView(
                   controller: _tabCtrl,
                   children: [_buildLoginTab(), _buildRegisterTab()],
@@ -238,7 +302,7 @@ class _AuthScreenState extends State<AuthScreen>
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: () {},
+                onPressed: _onForgotPassword,
                 child: const Text('Forgot Password?'),
               ),
             ),
@@ -410,11 +474,22 @@ class _AuthScreenState extends State<AuthScreen>
 
   Widget _socialBtn(String label, IconData icon, Color color) {
     return OutlinedButton.icon(
-      onPressed: () {},
+      onPressed: () {
+        // TODO: Implement social login
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Social login coming soon!'),
+            duration: Duration(seconds: 1),
+          ),
+        );
+      },
       icon: Icon(icon, color: color, size: 22),
       label: Text(label),
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
       ),
     );
   }

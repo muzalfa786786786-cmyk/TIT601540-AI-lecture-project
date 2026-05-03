@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
-import '../routes/app_routes.dart';  // ✅ Changed from utils to routes
+import '../routes/app_routes.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -91,6 +91,26 @@ class _SplashScreenState extends State<SplashScreen>
                     scale: _pulse,
                     child: Hero(
                       tag: 'app_logo',
+                      flightShuttleBuilder: (flightContext, animation, direction, fromContext, toContext) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(30),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 30,
+                                spreadRadius: 2,
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.school_rounded,
+                            color: AppTheme.primary,
+                            size: 60,
+                          ),
+                        );
+                      },
                       child: Container(
                         width: 110,
                         height: 110,
@@ -141,7 +161,7 @@ class _SplashScreenState extends State<SplashScreen>
                       Text(
                         'AI Lecturer Platform',
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.85),
+                          color: Colors.white.withValues(alpha: 0.85),
                           fontSize: 15,
                           letterSpacing: 0.5,
                         ),
@@ -160,8 +180,9 @@ class _SplashScreenState extends State<SplashScreen>
               height: 32,
               child: CircularProgressIndicator(
                 strokeWidth: 2.5,
-                valueColor: AlwaysStoppedAnimation(
-                    Colors.white.withOpacity(0.7)),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  Colors.white.withValues(alpha: 0.7),
+                ),
               ),
             ),
 
@@ -169,7 +190,7 @@ class _SplashScreenState extends State<SplashScreen>
             Text(
               'Powered by AI',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
+                color: Colors.white.withValues(alpha: 0.6),
                 fontSize: 12,
               ),
             ),

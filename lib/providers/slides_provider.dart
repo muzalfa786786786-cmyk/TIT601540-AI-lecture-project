@@ -1,4 +1,5 @@
 // lib/providers/slides_provider.dart
+
 import 'package:flutter/material.dart';
 import '../models/models.dart';
 import '../services/api_service.dart';
@@ -16,11 +17,13 @@ class SlidesProvider extends ChangeNotifier {
   double get progress => _progress;
   String? get error => _error;
   bool get hasSlides => _generatedSlides.isNotEmpty;
+  int get savedSlidesCount => _savedSlides.length;
 
   SlidesProvider() {
     loadSavedSlides();
   }
 
+  // ─── Load Saved Slides ────────────────────────────────────────
   Future<void> loadSavedSlides() async {
     try {
       _savedSlides = await ApiService.getSavedSlides();
@@ -31,6 +34,7 @@ class SlidesProvider extends ChangeNotifier {
     }
   }
 
+  // ─── Generate Slides ─────────────────────────────────────────
   Future<void> generateSlides({
     required String topic,
     required String subject,
@@ -58,13 +62,15 @@ class SlidesProvider extends ChangeNotifier {
         count: count,
       );
     } catch (e) {
-      _error = 'Failed to generate slides.';
+      _error = 'Failed to generate slides. Please try again.';
+      _generatedSlides = [];
     } finally {
       _isGenerating = false;
       notifyListeners();
     }
   }
 
+  // ─── Save Slide ───────────────────────────────────────────────
   Future<bool> saveSlide(String title, String content, int index) async {
     try {
       final newSlide = SlideModel(
@@ -85,38 +91,81 @@ class SlidesProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      _error = 'Failed to save slide';
+      _error = 'Failed to save slide: $e';
       notifyListeners();
       return false;
     }
   }
 
+  // ─── Save All Generated Slides ────────────────────────────────
+  Future<int> saveAllSlides() async {
+    int savedCount = 0;
+    for (int i = 0; i < _generatedSlides.length; i++) {
+      final success = await saveSlide(_generatedSlides[i], _generatedSlides[i], i);
+      if (success) savedCount++;
+    }
+    return savedCount;
+  }
+
+  // ─── Delete Saved Slide ───────────────────────────────────────
   Future<void> deleteSavedSlide(String id) async {
-    _savedSlides.removeWhere((s) => s.id == id);
-    await ApiService.deleteSavedSlide(id);
-    notifyListeners();
-  }
-
-  Future<void> deleteAllSavedSlides() async {
-    _savedSlides.clear();
-    await ApiService.deleteAllSavedSlides();
-    notifyListeners();
-  }
-
-  Future<void> updateSlide(String id, {String? title, String? content}) async {
-    final index = _savedSlides.indexWhere((s) => s.id == id);
-    if (index != -1) {
-      if (title != null) _savedSlides[index].title = title;
-      if (content != null) _savedSlides[index].content = content;
-      await ApiService.updateSavedSlide(_savedSlides[index]);
+    try {
+      _savedSlides.removeWhere((s) => s.id == id);
+      await ApiService.deleteSavedSlide(id);
+      notifyListeners();
+    } catch (e) {
+      _error = 'Failed to delete slide';
       notifyListeners();
     }
   }
 
+  // ─── Delete All Saved Slides ──────────────────────────────────
+  Future<void> deleteAllSavedSlides() async {
+    try {
+      _savedSlides.clear();
+      await ApiService.deleteAllSavedSlides();
+      notifyListeners();
+    } catch (e) {
+      _error = 'Failed to delete all slides';
+      notifyListeners();
+    }
+  }
+
+  // ─── Update Slide ─────────────────────────────────────────────
+  Future<void> updateSlide(String id, {String? title, String? content}) async {
+    try {
+      final index = _savedSlides.indexWhere((s) => s.id == id);
+      if (index != -1) {
+        if (title != null) _savedSlides[index].title = title;
+        if (content != null) _savedSlides[index].content = content;
+        await ApiService.updateSavedSlide(_savedSlides[index]);
+        notifyListeners();
+      }
+    } catch (e) {
+      _error = 'Failed to update slide';
+      notifyListeners();
+    }
+  }
+
+  // ─── Clear Generated Slides ───────────────────────────────────
   void clearSlides() {
     _generatedSlides = [];
     _progress = 0.0;
     _error = null;
     notifyListeners();
+  }
+
+  // ─── Clear Error ──────────────────────────────────────────────
+  void clearError() {
+    _error = null;
+    notifyListeners();
+  }
+
+  // ─── Get Progress Message ─────────────────────────────────────
+  String getProgressMessage() {
+    if (_progress < 0.3) return 'Analyzing topic...';
+    if (_progress < 0.6) return 'Generating content...';
+    if (_progress < 0.9) return 'Adding visuals...';
+    return 'Finalizing slides...';
   }
 }

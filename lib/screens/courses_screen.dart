@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
-// Uncomment for Firestore option
-// import 'package:cloud_firestore/cloud_firestore.dart';
+import '../theme/app_theme.dart';
+import '../widgets/common_widgets.dart';
 
 class CoursesScreen extends StatefulWidget {
   const CoursesScreen({super.key});
@@ -32,7 +32,6 @@ class _CoursesScreenState extends State<CoursesScreen> {
     super.dispose();
   }
 
-  // MARK: - Load from Local JSON
   Future<void> _loadCourses() async {
     try {
       final String response = await rootBundle.loadString('assets/courses.json');
@@ -54,41 +53,14 @@ class _CoursesScreenState extends State<CoursesScreen> {
     }
   }
 
-  // MARK: - Load from Firestore (Alternative)
-  /*
-  Future<void> _loadCoursesFromFirestore() async {
-    try {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('courses')
-          .get();
-
-      setState(() {
-        _allCourses = querySnapshot.docs
-            .map((doc) => Course.fromFirestore(doc))
-            .toList();
-        _filteredCourses = _allCourses;
-        _isLoading = false;
-      });
-    } catch (e) {
-      print("Error loading courses from Firestore: $e");
-      setState(() {
-        _isLoading = false;
-      });
-      _showErrorSnackBar("Failed to load courses");
-    }
-  }
-  */
-
   void _filterCourses() {
     setState(() {
       _filteredCourses = _allCourses.where((course) {
-        // Filter by search query
         final matchesSearch = _searchQuery.isEmpty ||
             course.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
             course.description.toLowerCase().contains(_searchQuery.toLowerCase()) ||
             course.instructor.toLowerCase().contains(_searchQuery.toLowerCase());
 
-        // Filter by category
         final matchesCategory = _selectedCategory == "All" ||
             course.category == _selectedCategory;
 
@@ -112,6 +84,118 @@ class _CoursesScreenState extends State<CoursesScreen> {
     );
   }
 
+  void _showCourseDetails(Course course) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            children: [
+              Icon(_getIconData(course.icon), color: AppTheme.primary, size: 28),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  course.title,
+                  style: const TextStyle(fontSize: 18),
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                course.description,
+                style: const TextStyle(fontSize: 14, height: 1.4),
+              ),
+              const SizedBox(height: 16),
+              const Divider(),
+              const SizedBox(height: 8),
+              _buildDetailRow(Icons.person_outline, 'Instructor', course.instructor),
+              const SizedBox(height: 8),
+              _buildDetailRow(Icons.category_outlined, 'Category', course.category),
+              const SizedBox(height: 8),
+              _buildDetailRow(Icons.menu_book, 'Lessons',
+                  '${course.completedLessons}/${course.totalLessons} completed'),
+              const SizedBox(height: 8),
+              _buildDetailRow(Icons.trending_up, 'Progress', '${course.progress}%'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Starting ${course.title}...'),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primary,
+              ),
+              child: const Text('Start Course'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildDetailRow(IconData icon, String label, String value) {
+    return Row(
+      children: [
+        Icon(icon, size: 16, color: Colors.grey.shade600),
+        const SizedBox(width: 8),
+        Text(
+          '$label: ',
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey.shade700,
+          ),
+        ),
+        Expanded(
+          child: Text(
+            value,
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.grey.shade600,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  IconData _getIconData(String iconName) {
+    switch (iconName) {
+      case 'flutter':
+        return Icons.flutter_dash;
+      case 'design_services':
+        return Icons.design_services;
+      case 'code':
+        return Icons.code;
+      case 'psychology':
+        return Icons.psychology;
+      case 'cloud':
+        return Icons.cloud;
+      case 'storage':
+        return Icons.storage;
+      default:
+        return Icons.school;
+    }
+  }
+
   List<String> get _categories {
     final categories = _allCourses.map((c) => c.category).toSet().toList();
     return ['All', ...categories];
@@ -129,7 +213,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Colors.red,
+        backgroundColor: AppTheme.primary,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
@@ -142,7 +226,6 @@ class _CoursesScreenState extends State<CoursesScreen> {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                // Search Bar
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -160,7 +243,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
                     onChanged: _onSearchChanged,
                     decoration: InputDecoration(
                       hintText: 'Search courses...',
-                      prefixIcon: const Icon(Icons.search, color: Colors.red),
+                      prefixIcon: const Icon(Icons.search, color: AppTheme.primary),
                       suffixIcon: _searchQuery.isNotEmpty
                           ? IconButton(
                         icon: const Icon(Icons.clear, color: Colors.grey),
@@ -182,13 +265,13 @@ class _CoursesScreenState extends State<CoursesScreen> {
       ),
       body: Column(
         children: [
-          // Category Filter
           if (!_isLoading && _allCourses.isNotEmpty)
             Container(
               height: 50,
               margin: const EdgeInsets.only(top: 8, bottom: 8),
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: _categories.length,
                 itemBuilder: (context, index) {
@@ -206,15 +289,15 @@ class _CoursesScreenState extends State<CoursesScreen> {
                         });
                       },
                       backgroundColor: Colors.grey.shade100,
-                      selectedColor: Colors.red.shade100,
-                      checkmarkColor: Colors.red,
+                      selectedColor: AppTheme.primary.withOpacity(0.1),
+                      checkmarkColor: AppTheme.primary,
                       labelStyle: TextStyle(
-                        color: isSelected ? Colors.red : Colors.grey.shade700,
+                        color: isSelected ? AppTheme.primary : Colors.grey.shade700,
                         fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                       ),
                       shape: StadiumBorder(
                         side: BorderSide(
-                          color: isSelected ? Colors.red : Colors.transparent,
+                          color: isSelected ? AppTheme.primary : Colors.transparent,
                           width: 1,
                         ),
                       ),
@@ -224,7 +307,6 @@ class _CoursesScreenState extends State<CoursesScreen> {
               ),
             ),
 
-          // Courses Grid
           Expanded(
             child: _isLoading
                 ? const Center(
@@ -232,7 +314,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                    valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primary),
                   ),
                   SizedBox(height: 16),
                   Text(
@@ -273,6 +355,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
               ),
             )
                 : GridView.builder(
+              physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.all(16),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
@@ -283,7 +366,10 @@ class _CoursesScreenState extends State<CoursesScreen> {
               itemCount: _filteredCourses.length,
               itemBuilder: (context, index) {
                 final course = _filteredCourses[index];
-                return CourseCard(course: course);
+                return CourseCard(
+                  course: course,
+                  onTap: () => _showCourseDetails(course),
+                );
               },
             ),
           ),
@@ -296,8 +382,13 @@ class _CoursesScreenState extends State<CoursesScreen> {
 // Course Card Widget
 class CourseCard extends StatelessWidget {
   final Course course;
+  final VoidCallback onTap;
 
-  const CourseCard({super.key, required this.course});
+  const CourseCard({
+    super.key,
+    required this.course,
+    required this.onTap,
+  });
 
   IconData _getIconData(String iconName) {
     switch (iconName) {
@@ -321,21 +412,13 @@ class CourseCard extends StatelessWidget {
   Color _getProgressColor(int progress) {
     if (progress >= 70) return Colors.green;
     if (progress >= 40) return Colors.orange;
-    return Colors.red;
+    return AppTheme.primary;
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        // Navigate to course details
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Opening ${course.title}'),
-            duration: const Duration(seconds: 1),
-          ),
-        );
-      },
+      onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -352,7 +435,6 @@ class CourseCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Card Header with Icon
             Container(
               height: 100,
               decoration: BoxDecoration(
@@ -360,8 +442,8 @@ class CourseCard extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Colors.red.shade400,
-                    Colors.red.shade700,
+                    AppTheme.primary,
+                    AppTheme.primaryLight,
                   ],
                 ),
                 borderRadius: const BorderRadius.only(
@@ -377,15 +459,12 @@ class CourseCard extends StatelessWidget {
                 ),
               ),
             ),
-
-            // Course Content
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Course Title
                     Text(
                       course.title,
                       style: const TextStyle(
@@ -397,8 +476,6 @@ class CourseCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 6),
-
-                    // Instructor
                     Row(
                       children: [
                         Icon(
@@ -421,8 +498,6 @@ class CourseCard extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 8),
-
-                    // Progress Section
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -527,20 +602,4 @@ class Course {
       completedLessons: json['completedLessons'],
     );
   }
-
-// For Firestore - Comment this out if not using Firestore
-// factory Course.fromFirestore(DocumentSnapshot doc) {
-//   Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-//   return Course(
-//     id: doc.id,
-//     title: data['title'],
-//     description: data['description'],
-//     progress: data['progress'],
-//     icon: data['icon'],
-//     category: data['category'],
-//     instructor: data['instructor'],
-//     totalLessons: data['totalLessons'],
-//     completedLessons: data['completedLessons'],
-//   );
-// }
 }

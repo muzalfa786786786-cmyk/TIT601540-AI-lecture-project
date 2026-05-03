@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 // Theme & Routes
 import 'theme/app_theme.dart';
@@ -18,6 +19,7 @@ import 'screens/saved_slides_screen.dart';
 import 'screens/whiteboard_screen.dart';
 import 'screens/avatar_screen.dart';
 import 'screens/profile_screen.dart';
+import 'screens/progress_screen.dart';  // ✅ Added ProgressScreen import
 
 // Providers
 import 'providers/auth_provider.dart';
@@ -26,6 +28,15 @@ import 'providers/chat_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  try {
+    await Firebase.initializeApp();
+    debugPrint("Firebase initialized successfully");
+  } catch (e) {
+    debugPrint("Firebase initialization error: $e");
+  }
+
   runApp(const TeachLearnApp());
 }
 
@@ -36,7 +47,7 @@ class TeachLearnApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()..init()),  // ✅ Added init
         ChangeNotifierProvider(create: (_) => SlidesProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
       ],
@@ -49,7 +60,6 @@ class TeachLearnApp extends StatelessWidget {
           AppRoutes.splash: (_) => const SplashScreen(),
           AppRoutes.auth: (_) => const AuthScreen(),
           AppRoutes.main: (_) => const MainNav(),
-          // Removed 'const' here because (i) {} is a closure and cannot be constant.
           AppRoutes.home: (_) => HomeScreen(onNavigate: (i) {}),
           AppRoutes.aiSlides: (_) => const SlideGeneratorScreen(),
           AppRoutes.liveQA: (_) => const LiveQAScreen(),
@@ -59,6 +69,7 @@ class TeachLearnApp extends StatelessWidget {
           AppRoutes.whiteboard: (_) => const WhiteboardScreen(),
           AppRoutes.avatar: (_) => const AvatarScreen(),
           AppRoutes.profile: (_) => const ProfileScreen(),
+          AppRoutes.progress: (_) => const ProgressScreen(),  // ✅ Added Progress route
         },
       ),
     );

@@ -1,8 +1,8 @@
 // lib/providers/auth_provider.dart
-// Provider for authentication state management
+// Provider for authentication state management with Firebase
 
 import 'package:flutter/material.dart';
-import '../models/user_model.dart';
+import '../models/models.dart';  // ✅ Updated import
 import '../services/auth_service.dart';
 
 class AuthProvider extends ChangeNotifier {
@@ -37,9 +37,13 @@ class AuthProvider extends ChangeNotifier {
     _setLoading(true);
     _clearError();
     try {
-      _user = await _authService.login(email: email, password: password);
-      notifyListeners();
-      return true;
+      final result = await _authService.login(email: email, password: password);
+      if (result != null) {
+        _user = result;
+        notifyListeners();
+        return true;
+      }
+      return false;
     } catch (e) {
       _error = e.toString().replaceFirst('Exception: ', '');
       notifyListeners();
@@ -54,10 +58,18 @@ class AuthProvider extends ChangeNotifier {
     _setLoading(true);
     _clearError();
     try {
-      _user = await _authService.register(
-          name: name, email: email, password: password, role: role);
-      notifyListeners();
-      return true;
+      final result = await _authService.register(
+        name: name,
+        email: email,
+        password: password,
+        role: role,
+      );
+      if (result != null) {
+        _user = result;
+        notifyListeners();
+        return true;
+      }
+      return false;
     } catch (e) {
       _error = e.toString().replaceFirst('Exception: ', '');
       notifyListeners();
@@ -69,26 +81,64 @@ class AuthProvider extends ChangeNotifier {
 
   // ─── Logout ───────────────────────────────────────────────────
   Future<void> logout() async {
-    await _authService.logout();
-    _user = null;
-    notifyListeners();
+    _setLoading(true);
+    _clearError();
+    try {
+      await _authService.logout();
+      _user = null;
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString().replaceFirst('Exception: ', '');
+      notifyListeners();
+    } finally {
+      _setLoading(false);
+    }
   }
 
-  // ─── Update User Profile (Updated for phone field) ────────────
-  Future<bool> updateProfile({String? name, String? phone}) async {
+  // ─── Update User Profile ──────────────────────────────────────
+  Future<bool> updateProfile({String? name, String? photoURL}) async {
     _setLoading(true);
+    _clearError();
     try {
-      await _authService.updateUserProfile(name: name, phone: phone);
+      await _authService.updateUserProfile(name: name, photoURL: photoURL);
       // Refresh user data
       _user = await _authService.getCurrentUser();
       notifyListeners();
       return true;
     } catch (e) {
-      _error = e.toString();
+      _error = e.toString().replaceFirst('Exception: ', '');
       notifyListeners();
       return false;
     } finally {
       _setLoading(false);
+    }
+  }
+
+  // ─── Reset Password ───────────────────────────────────────────
+  Future<bool> resetPassword(String email) async {
+    _setLoading(true);
+    _clearError();
+    try {
+      await _authService.resetPassword(email);
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = e.toString().replaceFirst('Exception: ', '');
+      notifyListeners();
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  // ─── Refresh User Data ────────────────────────────────────────
+  Future<void> refreshUser() async {
+    try {
+      _user = await _authService.getCurrentUser();
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
     }
   }
 

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../theme/app_theme.dart';
 
 class AvatarScreen extends StatefulWidget {
   const AvatarScreen({super.key});
@@ -70,20 +71,25 @@ class _AvatarScreenState extends State<AvatarScreen> {
       _isStartingPresentation = true;
     });
 
+    // Simulate AI preparation
     await Future.delayed(const Duration(seconds: 2));
 
-    setState(() {
-      _isStartingPresentation = false;
-    });
+    if (mounted) {
+      setState(() {
+        _isStartingPresentation = false;
+      });
 
-    final selectedVoice = _voiceOptions.firstWhere((v) => v.id == _selectedVoice);
+      final selectedVoice = _voiceOptions.firstWhere((v) => v.id == _selectedVoice);
+      final teacherName = _selectedAvatar == AvatarType.male ? "Abdul Rehman" : "Muzalfa Bibi";
+      final title = _selectedAvatar == AvatarType.male ? "Mr." : "Ms.";
 
-    _showSnackBar(
-      'Starting presentation with ${_selectedAvatar == AvatarType.male ? "Mr." : "Ms."} ${_selectedAvatar == AvatarType.male ? "Abdul Rehman" : "Muzalfa BiBi"} using ${selectedVoice.name} voice',
-      Colors.green,
-    );
+      _showSnackBar(
+        'Starting presentation with $title $teacherName using ${selectedVoice.name} voice',
+        Colors.green,
+      );
 
-    _showPresentationDialog();
+      _showPresentationDialog();
+    }
   }
 
   void _showPresentationDialog() {
@@ -103,7 +109,7 @@ class _AvatarScreenState extends State<AvatarScreen> {
                 const Icon(
                   Icons.play_circle_filled,
                   size: 80,
-                  color: Colors.red,
+                  color: AppTheme.primary,
                 ),
                 const SizedBox(height: 16),
                 const Text(
@@ -130,8 +136,8 @@ class _AvatarScreenState extends State<AvatarScreen> {
                           Navigator.pop(context);
                         },
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.red,
-                          side: const BorderSide(color: Colors.red),
+                          foregroundColor: AppTheme.primary,
+                          side: const BorderSide(color: AppTheme.primary),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -145,9 +151,11 @@ class _AvatarScreenState extends State<AvatarScreen> {
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.pop(context);
+                          // Navigate to presentation screen
+                          _showSnackBar('Starting presentation mode...', Colors.green);
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
+                          backgroundColor: AppTheme.primary,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
@@ -190,7 +198,7 @@ class _AvatarScreenState extends State<AvatarScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Colors.red,
+        backgroundColor: AppTheme.primary,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
@@ -202,6 +210,7 @@ class _AvatarScreenState extends State<AvatarScreen> {
         children: [
           Expanded(
             child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -241,7 +250,7 @@ class _AvatarScreenState extends State<AvatarScreen> {
                       Expanded(
                         child: _buildAvatarCard(
                           type: AvatarType.female,
-                          name: 'Muzalfa BiBi',
+                          name: 'Muzalfa Bibi',
                           title: 'Lead AI Educator',
                           specialization: 'Data Science & Analytics',
                           experience: '5+ years',
@@ -254,6 +263,7 @@ class _AvatarScreenState extends State<AvatarScreen> {
 
                   const SizedBox(height: 32),
 
+                  // Voice Selection Section
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
@@ -276,7 +286,7 @@ class _AvatarScreenState extends State<AvatarScreen> {
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
-                                  colors: [Colors.red, Colors.redAccent],
+                                  colors: [AppTheme.primary, AppTheme.primaryLight],
                                 ),
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -314,7 +324,7 @@ class _AvatarScreenState extends State<AvatarScreen> {
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<String>(
                               value: _selectedVoice,
-                              icon: const Icon(Icons.arrow_drop_down, color: Colors.red),
+                              icon: const Icon(Icons.arrow_drop_down, color: AppTheme.primary),
                               iconSize: 32,
                               isExpanded: true,
                               style: const TextStyle(
@@ -376,23 +386,24 @@ class _AvatarScreenState extends State<AvatarScreen> {
 
                   const SizedBox(height: 20),
 
+                  // Info Card
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Colors.red.shade50,
-                          Colors.orange.shade50,
+                          AppTheme.primary.withOpacity(0.05),
+                          Colors.orange.withOpacity(0.05),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.red.shade100),
+                      border: Border.all(color: AppTheme.primary.withOpacity(0.2)),
                     ),
                     child: Row(
                       children: [
                         Icon(
                           Icons.info_outline,
-                          color: Colors.red.shade700,
+                          color: AppTheme.primary,
                           size: 24,
                         ),
                         const SizedBox(width: 12),
@@ -401,7 +412,7 @@ class _AvatarScreenState extends State<AvatarScreen> {
                             'Your selected AI teacher will deliver the presentation with natural expressions and gestures. The voice will match the selected avatar\'s personality.',
                             style: TextStyle(
                               fontSize: 12,
-                              color: Colors.red.shade900,
+                              color: AppTheme.primaryDark,
                               height: 1.4,
                             ),
                           ),
@@ -414,6 +425,7 @@ class _AvatarScreenState extends State<AvatarScreen> {
             ),
           ),
 
+          // Start Presentation Button
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -431,7 +443,7 @@ class _AvatarScreenState extends State<AvatarScreen> {
               child: ElevatedButton(
                 onPressed: _isStartingPresentation ? null : _startPresentation,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
+                  backgroundColor: AppTheme.primary,
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.grey.shade300,
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -501,11 +513,11 @@ class _AvatarScreenState extends State<AvatarScreen> {
         curve: Curves.easeInOut,
         child: Card(
           elevation: isSelected ? 8 : 2,
-          shadowColor: isSelected ? Colors.red.withOpacity(0.3) : Colors.grey,
+          shadowColor: isSelected ? AppTheme.primary.withOpacity(0.3) : Colors.grey,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
             side: isSelected
-                ? const BorderSide(color: Colors.red, width: 3)
+                ? const BorderSide(color: AppTheme.primary, width: 3)
                 : BorderSide.none,
           ),
           child: Column(
@@ -524,10 +536,10 @@ class _AvatarScreenState extends State<AvatarScreen> {
                     return Container(
                       height: 180,
                       color: Colors.grey.shade200,
-                      child: const Icon(
+                      child: Icon(
                         Icons.person,
                         size: 80,
-                        color: Colors.grey,
+                        color: Colors.grey.shade400,
                       ),
                     );
                   },
@@ -603,7 +615,7 @@ class _AvatarScreenState extends State<AvatarScreen> {
                         _showSnackBar('Selected $name as your AI teacher', Colors.green);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: isSelected ? Colors.red : Colors.grey.shade200,
+                        backgroundColor: isSelected ? AppTheme.primary : Colors.grey.shade200,
                         foregroundColor: isSelected ? Colors.white : Colors.black87,
                         elevation: 0,
                         shape: RoundedRectangleBorder(

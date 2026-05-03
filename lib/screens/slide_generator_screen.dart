@@ -1,5 +1,6 @@
 // lib/screens/slide_generator_screen.dart
 // AI Slide Generator with form, progress, and preview
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/slides_provider.dart';
@@ -7,9 +8,11 @@ import '../theme/app_theme.dart';
 
 class SlideGeneratorScreen extends StatefulWidget {
   const SlideGeneratorScreen({super.key});
+
   @override
   State<SlideGeneratorScreen> createState() => _SlideGeneratorScreenState();
 }
+
 class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
   final _formKey = GlobalKey<FormState>();
   final _topicCtrl = TextEditingController();
@@ -18,9 +21,6 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
   int _slideCount = 10;
   bool _includeImages = true;
   bool _includeQuiz = false;
-
-  // Track selected slide for detailed view
-  String? _selectedSlide;
 
   final _subjects = ['Mathematics', 'Physics', 'Chemistry',
     'Computer Science', 'Biology', 'History', 'English'];
@@ -34,10 +34,6 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
 
   void _generate() {
     if (!_formKey.currentState!.validate()) return;
-
-    // Clear previous selection
-    _selectedSlide = null;
-
     context.read<SlidesProvider>().generateSlides(
       topic: _topicCtrl.text.trim(),
       subject: _subject,
@@ -51,24 +47,41 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Slide ${index + 1}'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            children: [
+              Icon(Icons.slideshow, color: AppTheme.primary, size: 24),
+              const SizedBox(width: 8),
+              Text('Slide ${index + 1}'),
+            ],
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.slideshow, size: 50, color: Colors.red),
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: AppTheme.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(Icons.slideshow, size: 30, color: AppTheme.primary),
+              ),
               const SizedBox(height: 16),
               Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 16,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 12),
               const Text(
                 'This slide covers key concepts and important points about the topic.',
-                style: TextStyle(fontSize: 14),
+                style: TextStyle(fontSize: 14, height: 1.4),
               ),
             ],
           ),
@@ -88,7 +101,7 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
+                backgroundColor: AppTheme.primary,
               ),
               child: const Text('Open Slide'),
             ),
@@ -104,36 +117,32 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('AI Slide Generator'),
-        backgroundColor: Colors.red,
+        backgroundColor: AppTheme.primary,
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            // ✅ Proper back navigation
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.history_rounded, color: Colors.white),
             onPressed: () {
-              // Navigate to saved slides
               Navigator.pushNamed(context, '/saved-slides');
             },
           ),
         ],
       ),
       body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(), // ✅ Smooth scrolling
+        physics: const AlwaysScrollableScrollPhysics(), // ✅ Force scroll
         padding: const EdgeInsets.all(20),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ─── Header Banner ──────────────────────────────
+              // Header Banner
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
@@ -179,7 +188,7 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
 
               const SizedBox(height: 24),
 
-              // ─── Topic Input ────────────────────────────────
+              // Topic Input
               const Text('Lecture Topic',
                   style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
               const SizedBox(height: 8),
@@ -188,23 +197,22 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
                 decoration: InputDecoration(
                   labelText: 'Topic',
                   hintText: 'e.g. Introduction to Calculus, Newton\'s Laws...',
-                  prefixIcon: const Icon(Icons.title_rounded, color: Colors.red),
+                  prefixIcon: const Icon(Icons.title_rounded, color: AppTheme.primary),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Colors.red),
+                    borderSide: const BorderSide(color: AppTheme.primary),
                   ),
                 ),
                 maxLines: 2,
-                validator: (v) =>
-                v == null || v.isEmpty ? 'Topic is required' : null,
+                validator: (v) => v == null || v.isEmpty ? 'Topic is required' : null,
               ),
 
               const SizedBox(height: 18),
 
-              // ─── Subject & Level Row ────────────────────────
+              // Subject & Level Row
               Row(
                 children: [
                   Expanded(child: _buildDropdown('Subject', _subject,
@@ -217,15 +225,14 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
 
               const SizedBox(height: 18),
 
-              // ─── Slide Count Slider ─────────────────────────
+              // Slide Count Slider
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text('Number of Slides',
                       style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
                       color: AppTheme.surface,
                       borderRadius: BorderRadius.circular(20),
@@ -255,7 +262,7 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
 
               const SizedBox(height: 8),
 
-              // ─── Options ────────────────────────────────────
+              // Options
               _buildToggle('Include Visual Images',
                   Icons.image_outlined, _includeImages,
                       (v) => setState(() => _includeImages = v)),
@@ -266,7 +273,7 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
 
               const SizedBox(height: 28),
 
-              // ─── Generate / Progress ────────────────────────
+              // Generate / Progress
               Consumer<SlidesProvider>(
                 builder: (_, provider, __) {
                   if (provider.isGenerating) {
@@ -278,8 +285,7 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
                             Text(_getProgressMsg(provider.progress),
                                 style: const TextStyle(
                                     color: AppTheme.primary, fontSize: 13)),
-                            Text(
-                                '${(provider.progress * 100).toInt()}%',
+                            Text('${(provider.progress * 100).toInt()}%',
                                 style: const TextStyle(
                                     color: AppTheme.primary,
                                     fontWeight: FontWeight.w700)),
@@ -292,17 +298,16 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
                             value: provider.progress,
                             minHeight: 8,
                             backgroundColor: AppTheme.divider,
-                            valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
+                            valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primary),
                           ),
                         ),
                       ],
                     );
                   }
-
                   return ElevatedButton(
                     onPressed: _generate,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
+                      backgroundColor: AppTheme.primary,
                       foregroundColor: Colors.white,
                       minimumSize: const Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(
@@ -323,7 +328,7 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
                 },
               ),
 
-              // ─── Slides Preview ─────────────────────────────
+              // Slides Preview
               Consumer<SlidesProvider>(
                 builder: (_, provider, __) {
                   if (!provider.hasSlides) return const SizedBox.shrink();
@@ -343,7 +348,6 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
                           ),
                           TextButton(
                             onPressed: () {
-                              // ✅ Save all slides
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('All slides saved to library!'),
@@ -357,7 +361,7 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
                       ),
                       const SizedBox(height: 14),
                       SizedBox(
-                        height: 160, // ✅ Increased height for better visibility
+                        height: 160,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           physics: const BouncingScrollPhysics(),
@@ -366,7 +370,7 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
                           itemBuilder: (_, i) {
                             final slideTitle = provider.generatedSlides[i];
                             return GestureDetector(
-                              onTap: () => _showSlideDetails(slideTitle, i), // ✅ Click handler
+                              onTap: () => _showSlideDetails(slideTitle, i),
                               child: Container(
                                 width: 180,
                                 padding: const EdgeInsets.all(14),
@@ -401,20 +405,20 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 8, vertical: 4),
                                           decoration: BoxDecoration(
-                                            color: Colors.red.withOpacity(0.1),
+                                            color: AppTheme.primary.withOpacity(0.1),
                                             borderRadius: BorderRadius.circular(12),
                                           ),
                                           child: Text(
                                             'Slide ${i + 1}',
                                             style: const TextStyle(
-                                              color: Colors.red,
+                                              color: AppTheme.primary,
                                               fontWeight: FontWeight.w600,
                                               fontSize: 10,
                                             ),
                                           ),
                                         ),
-                                        const Icon(Icons.slideshow_rounded,
-                                            color: Colors.red, size: 18),
+                                        Icon(Icons.slideshow_rounded,
+                                            color: AppTheme.primary, size: 18),
                                       ],
                                     ),
                                     const SizedBox(height: 12),
@@ -452,7 +456,6 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
                           Expanded(
                             child: ElevatedButton(
                               onPressed: () {
-                                // ✅ Present now
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text('Starting presentation mode...'),
@@ -461,7 +464,7 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
                                 );
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
+                                backgroundColor: AppTheme.primary,
                                 foregroundColor: Colors.white,
                                 padding: const EdgeInsets.symmetric(vertical: 14),
                                 shape: RoundedRectangleBorder(
@@ -481,7 +484,6 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
                           const SizedBox(width: 12),
                           OutlinedButton.icon(
                             onPressed: () {
-                              // ✅ Export slides
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('Exporting slides...'),
@@ -492,7 +494,7 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
                             icon: const Icon(Icons.download_rounded, size: 18),
                             label: const Text('Export'),
                             style: OutlinedButton.styleFrom(
-                                foregroundColor: Colors.red,
+                                foregroundColor: AppTheme.primary,
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 18, vertical: 14)),
                           ),
@@ -502,7 +504,6 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
                   );
                 },
               ),
-
               const SizedBox(height: 32),
             ],
           ),
@@ -538,8 +539,7 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
               value: value,
               isExpanded: true,
               icon: const Icon(Icons.keyboard_arrow_down, size: 20),
-              style: const TextStyle(
-                  color: AppTheme.textDark, fontSize: 13),
+              style: const TextStyle(color: AppTheme.textDark, fontSize: 13),
               items: items
                   .map((i) => DropdownMenuItem(value: i, child: Text(i)))
                   .toList(),
@@ -564,10 +564,8 @@ class _SlideGeneratorScreenState extends State<SlideGeneratorScreen> {
         children: [
           Icon(icon, color: AppTheme.primary, size: 20),
           const SizedBox(width: 12),
-          Expanded(
-              child: Text(label,
-                  style: const TextStyle(fontSize: 13))),
-          Switch(value: value, onChanged: onChange, activeColor: Colors.red),
+          Expanded(child: Text(label, style: const TextStyle(fontSize: 13))),
+          Switch(value: value, onChanged: onChange, activeColor: AppTheme.primary),
         ],
       ),
     );

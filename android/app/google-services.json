@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "322193251185",
+    "project_id": "ai-lecturer-6d8c5",
+    "storage_bucket": "ai-lecturer-6d8c5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:322193251185:android:b848b8741df89e122f34d0",
+        "android_client_info": {
+          "package_name": "com.ai_lecturer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCn4i6XCPfbZec6pl34gEKqbMLqBfgWIbg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
