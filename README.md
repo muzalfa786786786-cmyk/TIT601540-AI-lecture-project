@@ -69,6 +69,8 @@ flutter run
 <img width="491" height="927" alt="image" src="https://github.com/user-attachments/assets/b712e894-7d4d-43d8-9013-1a39804ef4f9" />
 <img width="521" height="927" alt="image" src="https://github.com/user-attachments/assets/2157709f-9dc3-4437-9d78-3b3a5ea11636" />
 <img width="502" height="930" alt="image" src="https://github.com/user-attachments/assets/db984b37-44d0-4274-acec-dc4810b15b81" />
+<img width="481" height="791" alt="Screenshot 2026-05-02 222459" src="https://github.com/user-attachments/assets/070b6942-3bce-48f5-b886-9e8a305f0390" />
+<img width="379" height="715" alt="Screenshot 2026-05-02 222345" src="https://github.com/user-attachments/assets/df4efee0-56f1-4bb0-88c5-f2fd03170673" />
 
 
 
