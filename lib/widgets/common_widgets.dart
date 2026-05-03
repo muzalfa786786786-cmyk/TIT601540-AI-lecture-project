@@ -11,6 +11,7 @@ class PrimaryButton extends StatelessWidget {
   final IconData? icon;
   final bool isLoading;
   final double? width;
+  final bool isOutlined;
 
   const PrimaryButton({
     super.key,
@@ -19,33 +20,70 @@ class PrimaryButton extends StatelessWidget {
     this.icon,
     this.isLoading = false,
     this.width,
+    this.isOutlined = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final buttonStyle = isOutlined
+        ? OutlinedButton.styleFrom(
+      foregroundColor: AppTheme.primary,
+      side: const BorderSide(color: AppTheme.primary),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+    )
+        : ElevatedButton.styleFrom(
+      backgroundColor: AppTheme.primary,
+      foregroundColor: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+    );
+
     return SizedBox(
       width: width ?? double.infinity,
       height: 52,
-      child: ElevatedButton(
+      child: isOutlined
+          ? OutlinedButton(
         onPressed: isLoading ? null : onPressed,
-        child: isLoading
-            ? const SizedBox(
-          width: 22,
-          height: 22,
-          child: CircularProgressIndicator(
-              color: Colors.white, strokeWidth: 2.5),
-        )
-            : Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (icon != null) ...[
-              Icon(icon, size: 20),
-              const SizedBox(width: 8),
-            ],
-            Text(label),
-          ],
-        ),
+        style: buttonStyle,
+        child: _buildChild(),
+      )
+          : ElevatedButton(
+        onPressed: isLoading ? null : onPressed,
+        style: buttonStyle,
+        child: _buildChild(),
       ),
+    );
+  }
+
+  Widget _buildChild() {
+    if (isLoading) {
+      return const SizedBox(
+        width: 22,
+        height: 22,
+        child: CircularProgressIndicator(
+          color: Colors.white,
+          strokeWidth: 2.5,
+        ),
+      );
+    }
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (icon != null) ...[
+          Icon(icon, size: 20),
+          const SizedBox(width: 8),
+        ],
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -55,25 +93,47 @@ class SectionHeader extends StatelessWidget {
   final String title;
   final String? action;
   final VoidCallback? onAction;
+  final bool showDivider;
 
   const SectionHeader({
     super.key,
     required this.title,
     this.action,
     this.onAction,
+    this.showDivider = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: Theme.of(context).textTheme.titleMedium),
-        if (action != null)
-          TextButton(
-            onPressed: onAction,
-            child: Text(action!),
-          ),
+        if (showDivider) const Divider(),
+        if (showDivider) const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            if (action != null)
+              GestureDetector(
+                onTap: onAction,
+                child: Text(
+                  action!,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: AppTheme.primary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+          ],
+        ),
       ],
     );
   }
@@ -85,6 +145,7 @@ class StatCard extends StatelessWidget {
   final String label;
   final IconData icon;
   final Color color;
+  final VoidCallback? onTap;
 
   const StatCard({
     super.key,
@@ -92,31 +153,57 @@ class StatCard extends StatelessWidget {
     required this.label,
     required this.icon,
     required this.color,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(10),
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: color, size: 22),
               ),
-              child: Icon(icon, color: color, size: 20),
-            ),
-            const SizedBox(height: 10),
-            Text(value,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: color, fontWeight: FontWeight.w700)),
-            Text(label, style: Theme.of(context).textTheme.bodyMedium),
-          ],
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      value,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: color,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: AppTheme.textMuted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -128,14 +215,20 @@ class GradientButton extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
   final IconData? icon;
+  final bool isLoading;
 
-  const GradientButton(
-      {super.key, required this.label, required this.onTap, this.icon});
+  const GradientButton({
+    super.key,
+    required this.label,
+    required this.onTap,
+    this.icon,
+    this.isLoading = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: isLoading ? null : onTap,
       child: Container(
         width: double.infinity,
         height: 52,
@@ -152,22 +245,33 @@ class GradientButton extends StatelessWidget {
             ),
           ],
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (icon != null) ...[
-              Icon(icon, color: Colors.white, size: 20),
-              const SizedBox(width: 8),
-            ],
-            Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 15,
-              ),
+        child: Center(
+          child: isLoading
+              ? const SizedBox(
+            width: 22,
+            height: 22,
+            child: CircularProgressIndicator(
+              color: Colors.white,
+              strokeWidth: 2.5,
             ),
-          ],
+          )
+              : Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (icon != null) ...[
+                Icon(icon, color: Colors.white, size: 20),
+                const SizedBox(width: 8),
+              ],
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -194,13 +298,14 @@ class AppChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
           color: selected ? color.withOpacity(0.12) : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-              color: selected ? color : AppTheme.divider,
-              width: selected ? 1.5 : 1),
+            color: selected ? color : AppTheme.divider,
+            width: selected ? 1.5 : 1,
+          ),
         ),
         child: Text(
           label,
@@ -250,19 +355,30 @@ class EmptyState extends StatelessWidget {
               child: Icon(icon, color: AppTheme.primary, size: 40),
             ),
             const SizedBox(height: 20),
-            Text(title,
-                style: Theme.of(context).textTheme.titleMedium,
-                textAlign: TextAlign.center),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 8),
-            Text(subtitle,
-                style: Theme.of(context).textTheme.bodyMedium,
-                textAlign: TextAlign.center),
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 13,
+                color: AppTheme.textMuted,
+              ),
+              textAlign: TextAlign.center,
+            ),
             if (actionLabel != null) ...[
               const SizedBox(height: 20),
               PrimaryButton(
-                  label: actionLabel!,
-                  onPressed: onAction,
-                  width: 180),
+                label: actionLabel!,
+                onPressed: onAction,
+                width: 180,
+              ),
             ],
           ],
         ),
@@ -279,17 +395,26 @@ class LoadingOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.black26,
+      color: Colors.black54,
       child: Center(
         child: Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(28),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const CircularProgressIndicator(),
+                const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primary),
+                ),
                 const SizedBox(height: 16),
-                Text(message, style: Theme.of(context).textTheme.bodyLarge),
+                Text(
+                  message,
+                  style: const TextStyle(fontSize: 14),
+                ),
               ],
             ),
           ),
@@ -310,6 +435,7 @@ class AppTextField extends StatelessWidget {
   final String? Function(String?)? validator;
   final Widget? suffixIcon;
   final int maxLines;
+  final bool enabled;
 
   const AppTextField({
     super.key,
@@ -322,6 +448,7 @@ class AppTextField extends StatelessWidget {
     this.validator,
     this.suffixIcon,
     this.maxLines = 1,
+    this.enabled = true,
   });
 
   @override
@@ -332,12 +459,66 @@ class AppTextField extends StatelessWidget {
       keyboardType: keyboardType,
       maxLines: maxLines,
       validator: validator,
+      enabled: enabled,
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
-        prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
+        prefixIcon: prefixIcon != null ? Icon(prefixIcon, size: 20) : null,
         suffixIcon: suffixIcon,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppTheme.divider),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppTheme.primary, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.red, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
     );
+  }
+}
+
+// ─── Confirmation Dialog ───────────────────────────────────────
+class ConfirmDialog {
+  static Future<bool> show(
+      BuildContext context, {
+        required String title,
+        required String message,
+        String confirmText = 'Confirm',
+        String cancelText = 'Cancel',
+        Color confirmColor = AppTheme.primary,
+      }) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(cancelText),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: confirmColor,
+            ),
+            child: Text(confirmText),
+          ),
+        ],
+      ),
+    );
+    return result ?? false;
   }
 }

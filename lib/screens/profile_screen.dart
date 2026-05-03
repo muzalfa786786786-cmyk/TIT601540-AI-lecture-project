@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-// import 'package:firebase_auth/firebase_auth.dart';  // ✅ Commented for API Lab
 import 'package:shared_preferences/shared_preferences.dart';
 import '../routes/app_routes.dart';
+import '../theme/app_theme.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -11,13 +11,11 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  // final FirebaseAuth _auth = FirebaseAuth.instance;  // ✅ Commented for API Lab
-  // User? _user;  // ✅ Commented for API Lab
-
-  // ✅ Mock user data for API Lab
-  String _userName = "Muzalfa BiBi";
+  // User data
+  String _userName = "Muzalfa Bibi";
   String _userEmail = "muzalfabibi@example.com";
-  String _userPhone = "+1 234 567 8900";
+  String _userPhone = "+92 300 1234567";
+  String _userRole = "Student";
   bool _isLoading = true;
 
   // Settings toggles
@@ -36,6 +34,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _loadUserData() async {
+    // Simulate loading delay
+    await Future.delayed(const Duration(milliseconds: 500));
     setState(() {
       _isLoading = false;
     });
@@ -61,58 +61,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await prefs.setBool('biometricLogin', _biometricLogin);
     await prefs.setBool('offlineMode', _offlineMode);
     await prefs.setBool('autoSave', _autoSave);
+
+    // Show confirmation
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Settings saved successfully'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 1),
+        ),
+      );
+    }
   }
 
   Future<void> _logout() async {
-    showDialog(
+    final confirmed = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           title: const Text('Logout'),
           content: const Text('Are you sure you want to logout?'),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.pop(context, false),
               child: const Text('Cancel'),
             ),
-            TextButton(
-              onPressed: () async {
-                Navigator.pop(context);
-                // try {
-                //   await _auth.signOut();  // ✅ Commented for API Lab
-                //   if (mounted) {
-                //     Navigator.pushNamedAndRemoveUntil(
-                //       context,
-                //       AppRoutes.auth,
-                //       (route) => false,
-                //     );
-                //   }
-                // } catch (e) {
-                //   if (mounted) {
-                //     ScaffoldMessenger.of(context).showSnackBar(
-                //       SnackBar(
-                //         content: Text('Error logging out: $e'),
-                //         backgroundColor: Colors.red,
-                //       ),
-                //     );
-                //   }
-                // }
-
-                // ✅ Mock logout for API Lab
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Logged out successfully'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              },
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primary,
+              ),
               child: const Text('Logout'),
             ),
           ],
         );
       },
     );
+
+    if (confirmed == true) {
+      // Show logout message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Logged out successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // Navigate to auth screen
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        AppRoutes.auth,
+            (route) => false,
+      );
+    }
   }
 
   void _showEditProfileDialog() {
@@ -123,6 +127,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           title: const Text('Edit Profile'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -153,6 +160,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   prefixIcon: Icon(Icons.phone),
                   border: OutlineInputBorder(),
                 ),
+                keyboardType: TextInputType.phone,
               ),
             ],
           ),
@@ -178,7 +186,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
+                backgroundColor: AppTheme.primary,
               ),
               child: const Text('Save'),
             ),
@@ -200,7 +208,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Colors.red,
+        backgroundColor: AppTheme.primary,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
@@ -221,7 +229,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+              valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primary),
             ),
             SizedBox(height: 16),
             Text(
@@ -232,6 +240,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       )
           : SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
             _buildProfileHeader(),
@@ -265,7 +274,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.red.withOpacity(0.3),
+                  color: AppTheme.primary.withOpacity(0.3),
                   blurRadius: 20,
                   spreadRadius: 5,
                 ),
@@ -273,11 +282,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             child: CircleAvatar(
               radius: 60,
-              backgroundColor: Colors.red.shade100,
+              backgroundColor: AppTheme.primary.withOpacity(0.1),
               child: const Icon(
                 Icons.person,
                 size: 60,
-                color: Colors.red,
+                color: AppTheme.primary,
               ),
             ),
           ),
@@ -327,6 +336,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              color: AppTheme.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              _userRole,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.primary,
+              ),
+            ),
           ),
           const SizedBox(height: 24),
         ],
@@ -532,10 +557,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           leading: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.red.shade50,
+              color: AppTheme.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: Colors.red.shade700, size: 20),
+            child: Icon(icon, color: AppTheme.primary, size: 20),
           ),
           title: Text(
             title,
@@ -553,8 +578,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           trailing: Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: Colors.red,
-            activeTrackColor: Colors.red.shade100,
+            activeColor: AppTheme.primary,
+            activeTrackColor: AppTheme.primary.withOpacity(0.2),
           ),
         ),
         const Divider(height: 1, indent: 72),
@@ -566,9 +591,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.red.shade50,
+        color: AppTheme.primary.withOpacity(0.05),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.red.shade200),
+        border: Border.all(color: AppTheme.primary.withOpacity(0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -580,11 +605,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.red,
+                color: AppTheme.primary,
               ),
             ),
           ),
-          const Divider(height: 1, color: Colors.red),
+          const Divider(height: 1, color: AppTheme.primary),
 
           ListTile(
             leading: Container(
@@ -593,20 +618,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(Icons.logout, color: Colors.red, size: 20),
+              child: const Icon(Icons.logout, color: AppTheme.primary, size: 20),
             ),
             title: const Text(
               'Logout',
               style: TextStyle(
                 fontWeight: FontWeight.w500,
-                color: Colors.red,
+                color: AppTheme.primary,
               ),
             ),
             subtitle: const Text(
               'Sign out from your account',
               style: TextStyle(fontSize: 12),
             ),
-            trailing: const Icon(Icons.chevron_right, color: Colors.red),
+            trailing: const Icon(Icons.chevron_right, color: AppTheme.primary),
             onTap: _logout,
           ),
           const SizedBox(height: 8),

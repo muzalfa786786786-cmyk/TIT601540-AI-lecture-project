@@ -2,20 +2,23 @@
 // Provider for Q&A chat state management
 
 import 'package:flutter/material.dart';
-import '../models/chat_message_model.dart';  // ✅ Fixed import
+import '../models/models.dart';  // ✅ Updated import (since models.dart has all models)
 import '../services/api_service.dart';
 
 class ChatProvider extends ChangeNotifier {
-  final List<ChatMessageModel> _messages = [];  // ✅ Changed to ChatMessageModel
+  final List<ChatMessageModel> _messages = [];
   bool _isTyping = false;
 
   List<ChatMessageModel> get messages => List.unmodifiable(_messages);
   bool get isTyping => _isTyping;
 
   ChatProvider() {
-    // Welcome message
+    _addWelcomeMessage();
+  }
+
+  void _addWelcomeMessage() {
     _messages.add(ChatMessageModel(
-      id: '0',
+      id: 'welcome_${DateTime.now().millisecondsSinceEpoch}',
       text: 'Hello! 👋 I\'m your AI Tutor. Ask me anything about your lecture topic and I\'ll explain it clearly. You can also ask me to solve problems step by step! 🎓',
       isUser: false,
       timestamp: DateTime.now(),
@@ -28,7 +31,7 @@ class ChatProvider extends ChangeNotifier {
 
     // Add user message
     _messages.add(ChatMessageModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: 'user_${DateTime.now().millisecondsSinceEpoch}',
       text: text.trim(),
       isUser: true,
       timestamp: DateTime.now(),
@@ -39,15 +42,15 @@ class ChatProvider extends ChangeNotifier {
     try {
       final response = await ApiService.getAIResponse(text);
       _messages.add(ChatMessageModel(
-        id: '${DateTime.now().millisecondsSinceEpoch}_ai',
+        id: 'ai_${DateTime.now().millisecondsSinceEpoch}',
         text: response,
         isUser: false,
         timestamp: DateTime.now(),
       ));
     } catch (e) {
       _messages.add(ChatMessageModel(
-        id: '${DateTime.now().millisecondsSinceEpoch}_err',
-        text: 'Sorry, I couldn\'t process your question. Please try again.',
+        id: 'error_${DateTime.now().millisecondsSinceEpoch}',
+        text: 'Sorry, I couldn\'t process your question. Please check your internet connection and try again.',
         isUser: false,
         timestamp: DateTime.now(),
       ));
@@ -60,13 +63,7 @@ class ChatProvider extends ChangeNotifier {
   // ─── Clear Chat ───────────────────────────────────────────────
   void clearChat() {
     _messages.clear();
-    // Add welcome message back
-    _messages.add(ChatMessageModel(
-      id: '0',
-      text: 'Hello! 👋 I\'m your AI Tutor. Ask me anything about your lecture topic and I\'ll explain it clearly. You can also ask me to solve problems step by step! 🎓',
-      isUser: false,
-      timestamp: DateTime.now(),
-    ));
+    _addWelcomeMessage();
     notifyListeners();
   }
 
@@ -78,26 +75,12 @@ class ChatProvider extends ChangeNotifier {
 
   // ─── Get Message Count ────────────────────────────────────────
   int get messageCount => _messages.length;
-
   int get userMessageCount => _messages.where((m) => m.isUser).length;
-
   int get aiMessageCount => _messages.where((m) => !m.isUser).length;
-}
 
-// ─── Message Model (if not exists separately) ───────────────────
-// If you don't have chat_message_model.dart, use this:
-/*
-class ChatMessageModel {
-  final String id;
-  final String text;
-  final bool isUser;
-  final DateTime timestamp;
+  // ─── Get Last Message ─────────────────────────────────────────
+  ChatMessageModel? get lastMessage => _messages.isNotEmpty ? _messages.last : null;
 
-  ChatMessageModel({
-    required this.id,
-    required this.text,
-    required this.isUser,
-    required this.timestamp,
-  });
+  // ─── Check if chat has messages ───────────────────────────────
+  bool get hasMessages => _messages.length > 1; // More than welcome message
 }
-*/

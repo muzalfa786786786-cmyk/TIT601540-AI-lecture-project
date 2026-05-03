@@ -1,11 +1,11 @@
-// lib/screens/home_screen.dart
-// Home Dashboard with CustomScrollView, Slivers, stats, quick actions
+// lib/screens/home_screen.dart (Updated with Drawer integration)
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
 import '../routes/app_routes.dart';
+import '../widgets/app_drawer.dart';  // ✅ Import AppDrawer
 
 class HomeScreen extends StatelessWidget {
   final Function(int) onNavigate;
@@ -16,8 +16,10 @@ class HomeScreen extends StatelessWidget {
     final user = context.watch<AuthProvider>().user;
 
     return Scaffold(
+      // ✅ Drawer integration
+      drawer: AppDrawer(onNavigate: onNavigate),
       body: CustomScrollView(
-        physics: const BouncingScrollPhysics(), // ✅ Smooth scrolling
+        physics: const BouncingScrollPhysics(),
         slivers: [
           // ─── Sliver App Bar ─────────────────────────────────
           SliverAppBar(
@@ -25,10 +27,11 @@ class HomeScreen extends StatelessWidget {
             floating: false,
             pinned: true,
             backgroundColor: AppTheme.primary,
+            // ✅ Menu icon automatically opens drawer
             leading: Builder(
               builder: (ctx) => IconButton(
                 icon: const Icon(Icons.menu_rounded, color: Colors.white),
-                onPressed: () => Scaffold.of(ctx).openDrawer(), // ✅ Drawer opens
+                onPressed: () => Scaffold.of(ctx).openDrawer(),
               ),
             ),
             actions: [
@@ -36,7 +39,6 @@ class HomeScreen extends StatelessWidget {
                 icon: const Icon(Icons.notifications_outlined,
                     color: Colors.white),
                 onPressed: () {
-                  // ✅ Notification click
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('No new notifications'),
@@ -47,7 +49,6 @@ class HomeScreen extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  // ✅ Profile avatar click - navigate to profile
                   Navigator.pushNamed(context, AppRoutes.profile);
                 },
                 child: const CircleAvatar(
@@ -167,7 +168,6 @@ class HomeScreen extends StatelessWidget {
                     ),
                     GestureDetector(
                       onTap: () {
-                        // ✅ See all quick actions
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('All quick actions available in drawer'),
@@ -204,8 +204,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     GestureDetector(
                       onTap: () {
-                        // ✅ View all courses
-                        onNavigate(4); // Navigate to Courses tab
+                        onNavigate(4);
                       },
                       child: Text(
                         'View all',
@@ -236,7 +235,6 @@ class HomeScreen extends StatelessWidget {
                     ),
                     GestureDetector(
                       onTap: () {
-                        // ✅ View all saved slides
                         Navigator.pushNamed(context, AppRoutes.saved);
                       },
                       child: Text(
@@ -269,7 +267,6 @@ class HomeScreen extends StatelessWidget {
     return 'Good Evening 👋';
   }
 
-  // ✅ Stat Card with click functionality
   Widget _buildStatCard(String value, String label, IconData icon, Color color, BuildContext context) {
     return GestureDetector(
       onTap: () {
@@ -351,6 +348,9 @@ class HomeScreen extends StatelessWidget {
               Navigator.pushNamed(context, AppRoutes.whiteboard);
             } else if (a.$4 == -2) {
               Navigator.pushNamed(context, AppRoutes.avatar);
+            }
+            else if (a.$4 == -3) {
+              Navigator.pushNamed(context, AppRoutes.progress);
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -401,7 +401,6 @@ class HomeScreen extends StatelessWidget {
       children: courses.map((c) {
         return GestureDetector(
           onTap: () {
-            // ✅ Course click - navigate to courses
             onNavigate(4);
           },
           child: Card(

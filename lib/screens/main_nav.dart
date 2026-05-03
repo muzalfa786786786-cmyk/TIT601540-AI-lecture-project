@@ -11,6 +11,10 @@ import 'slide_generator_screen.dart';
 import 'live_qa_screen.dart';
 import 'student_upload_screen.dart';
 import 'courses_screen.dart';
+import 'saved_slides_screen.dart';
+import 'whiteboard_screen.dart';
+import 'avatar_screen.dart';
+import 'profile_screen.dart';
 
 class MainNav extends StatefulWidget {
   const MainNav({super.key});
@@ -25,7 +29,7 @@ class _MainNavState extends State<MainNav> {
   void _goTo(int i) => setState(() => _currentIndex = i);
 
   late final List<Widget> _screens = [
-    HomeScreen(onNavigate: _goTo),      // ✅ Shows users list from API
+    HomeScreen(onNavigate: _goTo),
     const SlideGeneratorScreen(),
     const LiveQAScreen(),
     const StudentUploadScreen(),
@@ -34,25 +38,30 @@ class _MainNavState extends State<MainNav> {
 
   static const _navItems = [
     BottomNavigationBarItem(
-        icon: Icon(Icons.home_outlined),
-        activeIcon: Icon(Icons.home_rounded),
-        label: 'Home'),
+      icon: Icon(Icons.home_outlined),
+      activeIcon: Icon(Icons.home_rounded),
+      label: 'Home',
+    ),
     BottomNavigationBarItem(
-        icon: Icon(Icons.auto_awesome_outlined),
-        activeIcon: Icon(Icons.auto_awesome),
-        label: 'AI Slides'),
+      icon: Icon(Icons.auto_awesome_outlined),
+      activeIcon: Icon(Icons.auto_awesome),
+      label: 'AI Slides',
+    ),
     BottomNavigationBarItem(
-        icon: Icon(Icons.chat_bubble_outline_rounded),
-        activeIcon: Icon(Icons.chat_bubble_rounded),
-        label: 'Q&A'),
+      icon: Icon(Icons.chat_bubble_outline_rounded),
+      activeIcon: Icon(Icons.chat_bubble_rounded),
+      label: 'Q&A',
+    ),
     BottomNavigationBarItem(
-        icon: Icon(Icons.upload_file_outlined),
-        activeIcon: Icon(Icons.upload_file),
-        label: 'Upload'),
+      icon: Icon(Icons.upload_file_outlined),
+      activeIcon: Icon(Icons.upload_file),
+      label: 'Upload',
+    ),
     BottomNavigationBarItem(
-        icon: Icon(Icons.book_outlined),
-        activeIcon: Icon(Icons.book),
-        label: 'Courses'),
+      icon: Icon(Icons.book_outlined),
+      activeIcon: Icon(Icons.book),
+      label: 'Courses',
+    ),
   ];
 
   @override
@@ -77,6 +86,7 @@ class _MainNavState extends State<MainNav> {
           selectedItemColor: AppTheme.primary,
           unselectedItemColor: Colors.grey,
           showUnselectedLabels: true,
+          elevation: 0,
         ),
       ),
     );
@@ -85,12 +95,14 @@ class _MainNavState extends State<MainNav> {
   // ─── App Drawer ──────────────────────────────────────────────
   Widget _buildDrawer() {
     final user = context.watch<AuthProvider>().user;
+
     return Drawer(
       child: SafeArea(
         child: Column(
           children: [
             // ─── Drawer Header ────────────────────────────
             Container(
+              width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
@@ -98,46 +110,57 @@ class _MainNavState extends State<MainNav> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                ),
               ),
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CircleAvatar(
-                    radius: 28,
+                    radius: 32,
                     backgroundColor: Colors.white.withValues(alpha: 0.2),
-                    child: const Icon(Icons.person,
-                        color: Colors.white, size: 32),
+                    child: Icon(
+                      Icons.person,
+                      size: 36,
+                      color: Colors.white,
+                    ),
                   ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(user?.name ?? 'TeachLearn User',
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16)),
-                        Text(user?.email ?? 'user@example.com',
-                            style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.8),
-                                fontSize: 12)),
-                        const SizedBox(height: 4),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            user?.role.toUpperCase() ?? 'STUDENT',
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                      ],
+                  const SizedBox(height: 12),
+                  Text(
+                    user?.name ?? 'TeachLearn User',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    user?.email ?? 'user@example.com',
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.8),
+                      fontSize: 13,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      user?.role.toUpperCase() ?? 'STUDENT',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ],
@@ -169,9 +192,9 @@ class _MainNavState extends State<MainNav> {
                     Navigator.pop(context);
                     setState(() => _currentIndex = 4);
                   }),
+
                   const Divider(indent: 16, endIndent: 16),
 
-                  // New Screens Section
                   _drawerItem(Icons.slideshow_rounded, 'Saved Slides', () {
                     Navigator.pop(context);
                     Navigator.pushNamed(context, AppRoutes.saved);
@@ -203,25 +226,28 @@ class _MainNavState extends State<MainNav> {
               ),
             ),
 
-            // ─── Logout ────────────────────────────────────
+            // ─── Logout Button ────────────────────────────────────
             Padding(
               padding: const EdgeInsets.all(16),
               child: OutlinedButton.icon(
-                onPressed: () async {
-                  await context.read<AuthProvider>().logout();
-                  if (mounted) {
-                    Navigator.pushReplacementNamed(context, AppRoutes.auth);
-                  }
-                },
-                icon: const Icon(Icons.logout_rounded,
-                    color: AppTheme.primary),
-                label: const Text('Logout'),
+                onPressed: _showLogoutDialog,
+                icon: const Icon(Icons.logout_rounded, size: 20),
+                label: const Text(
+                  'Logout',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
                 style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 46),
-                  side: const BorderSide(color: AppTheme.primary),
+                  foregroundColor: AppTheme.primary,
+                  side: const BorderSide(color: AppTheme.primary, width: 1.5),
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ),
+
+            const SizedBox(height: 8),
           ],
         ),
       ),
@@ -230,13 +256,61 @@ class _MainNavState extends State<MainNav> {
 
   Widget _drawerItem(IconData icon, String label, VoidCallback onTap) {
     return ListTile(
-      leading: Icon(icon, color: AppTheme.primary, size: 22),
-      title: Text(label, style: const TextStyle(fontSize: 14)),
+      leading: Icon(icon, color: AppTheme.primary, size: 24),
+      title: Text(
+        label,
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+      ),
+      trailing: const Icon(
+        Icons.arrow_forward_ios_rounded,
+        size: 14,
+        color: Colors.grey,
+      ),
       onTap: onTap,
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10)),
+        borderRadius: BorderRadius.circular(10),
+      ),
       horizontalTitleGap: 8,
     );
+  }
+
+  void _showLogoutDialog() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Text('Logout'),
+          content: const Text('Are you sure you want to logout?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primary,
+              ),
+              child: const Text('Logout'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true) {
+      await context.read<AuthProvider>().logout();
+      if (mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          AppRoutes.auth,
+              (route) => false,
+        );
+      }
+    }
   }
 
   void _showHelpDialog() {
@@ -244,12 +318,16 @@ class _MainNavState extends State<MainNav> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           title: const Text('Help & Support'),
           content: const Text(
             'For assistance, please contact:\n\n'
-                '📧 Email: support@teachablearn.com\n'
+                '📧 Email: support@teachlearn.com\n'
                 '📞 Phone: +1 (555) 123-4567\n\n'
-                'Hours: Mon-Fri, 9 AM - 6 PM',
+                'Hours: Mon-Fri, 9 AM - 6 PM\n\n'
+                'We\'re here to help you 24/7!',
           ),
           actions: [
             TextButton(
@@ -267,29 +345,42 @@ class _MainNavState extends State<MainNav> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           title: const Text('About TeachLearn'),
-          content: const Column(
+          content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.school, size: 50, color: AppTheme.primary),
-              SizedBox(height: 10),
-              Text(
+              const Icon(
+                Icons.school_rounded,
+                size: 50,
+                color: AppTheme.primary,
+              ),
+              const SizedBox(height: 12),
+              const Text(
                 'TeachLearn - AI Lecturer',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 8),
-              Text(
+              const SizedBox(height: 4),
+              const Text(
                 'Version 1.0.0',
                 style: TextStyle(fontSize: 12, color: Colors.grey),
               ),
-              SizedBox(height: 12),
-              Text(
+              const SizedBox(height: 16),
+              const Divider(),
+              const SizedBox(height: 8),
+              _buildAboutRow('Developer', 'TeachLearn Team'),
+              _buildAboutRow('Email', 'info@teachlearn.com'),
+              _buildAboutRow('Website', 'www.teachlearn.com'),
+              const SizedBox(height: 12),
+              const Text(
                 'An AI-powered learning platform that helps students with lecture generation, Q&A, whiteboard, and more.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14),
+                style: TextStyle(fontSize: 12, color: Colors.grey),
               ),
             ],
           ),
@@ -301,6 +392,31 @@ class _MainNavState extends State<MainNav> {
           ],
         );
       },
+    );
+  }
+
+  Widget _buildAboutRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 80,
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey,
+              ),
+            ),
+          ),
+          Text(
+            ': $value',
+            style: const TextStyle(fontSize: 12),
+          ),
+        ],
+      ),
     );
   }
 }
