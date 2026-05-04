@@ -47,7 +47,7 @@ void main() {
     final passwordField = find.widgetWithText(TextField, 'Password');
 
     // Enter email
-    await tester.enterText(emailField, 'test@example.com');
+    await tester.enterText(emailField, 'test@ai_lecturer.com');
     await tester.pump();
 
     // Enter password

@@ -267,7 +267,7 @@ class _AuthScreenState extends State<AuthScreen>
           children: [
             AppTextField(
               label: 'Email Address',
-              hint: 'you@example.com',
+              hint: 'you@ai_lecturer.com',
               prefixIcon: Icons.email_outlined,
               controller: _loginEmailCtrl,
               keyboardType: TextInputType.emailAddress,
@@ -341,7 +341,7 @@ class _AuthScreenState extends State<AuthScreen>
             const SizedBox(height: 14),
             AppTextField(
               label: 'Email Address',
-              hint: 'you@example.com',
+              hint: 'you@ai_lecturer.com',
               prefixIcon: Icons.email_outlined,
               controller: _regEmailCtrl,
               keyboardType: TextInputType.emailAddress,

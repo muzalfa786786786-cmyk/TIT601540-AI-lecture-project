@@ -138,7 +138,7 @@ class _MainNavState extends State<MainNav> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    user?.email ?? 'user@example.com',
+                    user?.email ?? 'user@ai_lecturer.com',
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.8),
                       fontSize: 13,

@@ -13,7 +13,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   // User data
   String _userName = "Muzalfa Bibi";
-  String _userEmail = "muzalfabibi@example.com";
+  String _userEmail = "muzalfabibi@ai_lecturer.com";
   String _userPhone = "+92 300 1234567";
   String _userRole = "Student";
   bool _isLoading = true;
